@@ -11,7 +11,7 @@ git checkout -b backend/issue-1/initial-setup
 # コミットメッセージに #[Issue番号] を含める
 git commit -m "chore: initial express setup #1"
 
-# 複数行のコミットメッセージの例
+# 複数行のコミットメッセージの例npm create vite@latest
 git commit -m "feat: setup express and mongodb connection #1
 
 - Install express and dependencies
