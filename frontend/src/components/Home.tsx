@@ -17,10 +17,10 @@ const Home = () => {
         <p className="font-poppins">Who’s the Best Artist? Let’s Find Out!</p>
       </div>
       <div className="flex flex-col gap-8 md:flex-row justify-center">
-        <Button onClick={setCreateRoom} className="w-[200px]">
+        <Button onClick={setCreateRoom} className="w-[230px]">
           Create Room
         </Button>
-        <Button className="w-[200px]">Join Room</Button>
+        <Button className="w-[230px]">Join Room</Button>
       </div>
       {isCreateRoom ? (
         <CreateRoomModal closeCreateRoomModal={closeCreateRoomModal} />
