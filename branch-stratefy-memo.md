@@ -63,3 +63,17 @@ git commit -m "feat: add mongodb connection #1"
 # Issue完了時の最終コミット
 git commit -m "feat: complete initial backend setup closes #1"
 ```
+
+## ブランチの削除
+
+local
+
+```bash
+git branch -d <branch-name>
+```
+
+remote
+
+```bash
+git push origin --delete <branch-name>
+```

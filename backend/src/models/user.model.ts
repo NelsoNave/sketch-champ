@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 // User Document Interface
 export interface IUser extends Document {
+  _id: mongoose.Types.ObjectId;
   password: string;
   username: string;
   createdAt: Date;
