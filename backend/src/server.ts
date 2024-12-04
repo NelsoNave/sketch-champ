@@ -4,6 +4,7 @@ import { createServer } from "http";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth.routes";
 dotenv.config();
 
 // Create server
@@ -18,7 +19,9 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
 // Routes
+app.use("/api/auth", authRoutes);
 
 // Create HTTP server
 const server = createServer(app);

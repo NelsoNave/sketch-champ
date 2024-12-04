@@ -1,11 +1,11 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model";
 import { AuthRequest, JwtPayload } from "../models/auth.model";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const auth = async (
+export const auth: RequestHandler = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -14,19 +14,22 @@ export const auth = async (
     // Get token from header
     const token = req.cookies.token;
     if (!token) {
-      return res.status(401).json({ message: "Authorization token required" });
+      res.status(401).json({ message: "Authorization token required" });
+      return;
     }
 
     // Verify token
     const { userId } = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     if (!userId) {
-      return res.status(401).json({ message: "Invalid token" });
+      res.status(401).json({ message: "Invalid token" });
+      return;
     }
 
     // Get user
     const user = await User.findById(userId).select("-password");
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      res.status(401).json({ message: "User not found" });
+      return;
     }
 
     // Attach user to request
