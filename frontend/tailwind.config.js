@@ -11,6 +11,9 @@ export default {
       boxShadow: {
         custom: "5px 5px 0px 0px rgba(0, 0, 0, 1)",
       },
+      borderWidth: {
+        1.5: "1.5px",
+      },
     },
   },
   plugins: [],

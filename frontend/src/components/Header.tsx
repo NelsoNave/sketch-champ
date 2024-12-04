@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Modal from "./Login";
+import LoginModal from "./LoginModal";
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,11 +10,11 @@ const Header = () => {
     <div className="flex justify-between items-center py-5 px-2 md:px-8">
       <div>Kawaii Logo</div>
       <nav>
-        <button onClick={openModal} className="text-sm">
+        <button onClick={openModal} className="text-sm font-bold">
           Log in
         </button>
       </nav>
-      {isModalOpen && <Modal closeModal={closeModal} />}
+      {isModalOpen && <LoginModal closeModal={closeModal} />}
     </div>
   );
 };
