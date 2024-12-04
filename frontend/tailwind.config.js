@@ -2,7 +2,16 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "custom-teal": "#1ABC9C",
+        "custom-yellow": "#FFC700",
+        "custom-pink": "#FF8577",
+      },
+      boxShadow: {
+        custom: "5px 5px 0px 0px rgba(0, 0, 0, 1)",
+      },
+    },
   },
   plugins: [],
 };
