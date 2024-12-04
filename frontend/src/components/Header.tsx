@@ -8,9 +8,9 @@ const Header = () => {
 
   return (
     <div className="flex justify-between items-center py-5 px-2 md:px-8">
-      <div>Kawaii Logo</div>
+      <div className="font-russo_one">Kawaii Logo</div>
       <nav>
-        <button onClick={openModal} className="text-sm font-bold">
+        <button onClick={openModal} className="text-md font-bold">
           Log in
         </button>
       </nav>

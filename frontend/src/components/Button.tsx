@@ -7,14 +7,14 @@ export interface ButtonProps extends React.HTMLAttributes<Element> {
 
 export default function Button({
   children,
-  variant = "pink",
+  variant = "white",
   size = "md",
   className = "",
   ...props
 }: ButtonProps) {
   // base
   const baseStyles =
-    "rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 w-[180px] h-[50px] font-bold border-2 border-black shadow-custom";
+    "rounded-xl transition-all duration-200 focus:outline-none focus:ring-2  w-full h-[50px] font-russo_one border-2 border-black shadow-custom";
 
   const variantStyles = {
     green:

@@ -6,10 +6,12 @@ const CreateRoomModal = ({
   closeCreateRoomModal: () => void;
 }) => {
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center font-poppins">
       <div className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl mb-4 font-bold">Create a New Room</h2>
+          <h2 className="text-2xl mb-4 font-bold font-russo_one">
+            Create a New Room
+          </h2>
           <button onClick={closeCreateRoomModal} className="mb-4">
             <img src="../../public/close.svg" alt="close button" />
           </button>
@@ -99,7 +101,7 @@ const CreateRoomModal = ({
               </span>
             </div>
           </div>
-          <Button className="w-full mt-4" variant="green">
+          <Button className="w-full mt-4 text-2xl" variant="green">
             Create
           </Button>
         </form>

@@ -16,6 +16,12 @@ export default {
       borderWidth: {
         1.5: "1.5px",
       },
+      fontFamily: {
+        mochiy_pop_one: ["Mochiy Pop One", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
+        nunito: ["Nunito Sans", "sans-serif"],
+        russo_one: ["Russo One", "sans-serif"],
+      },
     },
   },
   plugins: [],
