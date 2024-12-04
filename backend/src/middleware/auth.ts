@@ -20,22 +20,7 @@ export const auth: RequestHandler = async (
     }
 
     // Verify token
-<<<<<<< HEAD
-    const { userId } = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    if (!userId) {
-      res.status(401).json({ message: "Invalid token" });
-      return;
-    }
-
-    // Get user
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
-      res.status(401).json({ message: "User not found" });
-      return;
-    }
-=======
     const user = await verifyUser(token);
->>>>>>> 2986b36 (Resolve conflicsts)
 
     // Attach user to request
     req.user = user;
@@ -44,8 +29,6 @@ export const auth: RequestHandler = async (
     res.status(401).json({ message: "Request is not authorized" });
   }
 };
-<<<<<<< HEAD
-=======
 
 export const verifyUser = async (token: string) => {
   try {
@@ -76,4 +59,3 @@ export const mockAuth = (
   } as IUser;
   next();
 };
->>>>>>> 2986b36 (Resolve conflicsts)

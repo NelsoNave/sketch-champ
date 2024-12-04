@@ -22,11 +22,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
-<<<<<<< HEAD
 
-// Routes
-app.use("/api/auth", authRoutes);
-=======
 // Middleware for testing
 if (process.env.NODE_ENV === "test") {
   console.log("running test");
@@ -36,7 +32,6 @@ if (process.env.NODE_ENV === "test") {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/room", roomRoutes);
->>>>>>> 2986b36 (Resolve conflicsts)
 
 // Create HTTP server
 const httpServer = createServer(app);
