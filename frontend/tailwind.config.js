@@ -7,6 +7,8 @@ export default {
         "custom-teal": "#1ABC9C",
         "custom-yellow": "#FFC700",
         "custom-pink": "#FF8577",
+        "custom-right-blue": "#699BF7",
+        "custom-dark-blue": "#0E4EC5",
       },
       boxShadow: {
         custom: "5px 5px 0px 0px rgba(0, 0, 0, 1)",
