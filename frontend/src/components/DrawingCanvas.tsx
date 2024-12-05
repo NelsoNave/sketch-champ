@@ -93,16 +93,18 @@ const DrawingCanvas = (props: Props) => {
         onTouchMove={(e) => handleTouch(e, "move")}
         onTouchEnd={endDraw}
       ></canvas>
-      <div className="tools">
-        <button onClick={clearCanvas}>Clear</button>
+      <div className="tools flex rounded-md p-3 gap-3">
         {colors.map((color) => (
           <button
             key={color}
-            className="w-10 h-10"
+            className="w-8 h-8 rounded-full"
             style={{ backgroundColor: color }}
             onClick={() => setStrokeColor(color)}
           ></button>
         ))}
+        <button onClick={clearCanvas}>
+          <img src="/trash.png" alt="" className="w-7" />
+        </button>
       </div>
     </div>
   );
