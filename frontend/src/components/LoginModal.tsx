@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useAuthStore } from "../store/useAuthStore";
 import Button from "./Button";
 
 type FormData = {
@@ -10,6 +11,7 @@ type FormData = {
 const LoginModal = ({ closeModal }: { closeModal: () => void }) => {
   const [isSignup, setIsSignup] = useState(false);
   const setSignup = () => setIsSignup(true);
+  const { login, signup } = useAuthStore();
 
   // validation
   const {
@@ -18,7 +20,13 @@ const LoginModal = ({ closeModal }: { closeModal: () => void }) => {
     formState: { errors },
   } = useForm<FormData>();
 
-  const onSubmit = () => {
+  const onSubmit = (data: FormData) => {
+    if (isSignup) {
+      signup({ username: data.username, password: data.password });
+    } else {
+      login({ username: data.username, password: data.password });
+    }
+
     closeModal();
   };
 
@@ -79,9 +87,7 @@ const LoginModal = ({ closeModal }: { closeModal: () => void }) => {
             {isSignup ? "Sign up" : "Log In"}
           </Button>
         </form>
-        {isSignup ? (
-          ""
-        ) : (
+        {!isSignup && (
           <div className="flex justify-center mt-4 gap-3">
             <p className="text-sm font-poppins">No account yet?</p>
             <button
