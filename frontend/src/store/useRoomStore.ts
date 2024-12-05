@@ -22,6 +22,7 @@ interface RoomStore {
   pending: boolean;
   drawer: boolean;
   roomId: string;
+  roomJoinId: string;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -40,6 +41,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
   pending: true,
   drawer: true,
   roomId: "",
+  roomJoinId: "",
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -74,9 +76,12 @@ export const useRoomStore = create<RoomStore>((set) => ({
     }
   },
 
-  joinRoom: async (codeWord: string) => {
+  joinRoom: async (codeword: string) => {
     try {
-      const res = await axiosInstance.put("/room/join", { codeWord });
+      const res = await axiosInstance.post("/room/join", {
+        codeword,
+      });
+      set({ roomJoinId: res.data.room._id });
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error(error.response?.data);

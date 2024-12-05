@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRoomStore } from "../store/useRoomStore";
+import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
 interface JoinRoomModalProps {
@@ -14,7 +15,14 @@ type FormData = {
 const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   closeJoinRoomModal,
 }) => {
-  const { joinRoom } = useRoomStore();
+  const { joinRoom, roomJoinId } = useRoomStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (roomJoinId) {
+      navigate(`/${roomJoinId}/room`);
+    }
+  }, [roomJoinId]);
 
   // validation
   const {
@@ -25,7 +33,6 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 
   const onSubmit = (data: FormData) => {
     joinRoom(data.codeword);
-    closeJoinRoomModal();
   };
 
   return (
