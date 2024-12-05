@@ -9,9 +9,14 @@ export default {
         "custom-pink": "#FF8577",
         "custom-right-blue": "#699BF7",
         "custom-dark-blue": "#0E4EC5",
+        "custom-albescent-white": "#F5E9D0",
+        "custom-serenade": "#fff8eb",
+        "custom-cape-cod": "#414749",
+        "custom-bianca": "#FDFBF6",
       },
       boxShadow: {
         custom: "5px 5px 0px 0px rgba(0, 0, 0, 1)",
+        custom_light: "0px 4px 4px 0px rgba(0, 0, 0, 0.1)",
       },
       borderWidth: {
         1.5: "1.5px",

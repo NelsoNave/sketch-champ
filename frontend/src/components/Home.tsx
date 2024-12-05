@@ -1,14 +1,22 @@
 import { useState } from "react";
 import Button from "./Button";
 import CreateRoomModal from "./CreateRoomModal";
+import JoinRoomModal from "./JoinRoomModal";
 
 const Home = () => {
   const [isCreateRoom, setIsCreateRoom] = useState(false);
+  const [isJoinRoom, setIsJoinRoom] = useState(false);
+
   const setCreateRoom = () => {
     setIsCreateRoom(true);
   };
 
+  const setJoinRoom = () => {
+    setIsJoinRoom(true);
+  };
+
   const closeCreateRoomModal = () => setIsCreateRoom(false);
+  const closeJoinRoomModal = () => setIsJoinRoom(false);
 
   return (
     <div className="flex flex-col gap-8 items-center justify-center h-full mb-20">
@@ -17,13 +25,20 @@ const Home = () => {
         <p className="font-poppins">Who’s the Best Artist? Let’s Find Out!</p>
       </div>
       <div className="flex flex-col gap-8 md:flex-row justify-center">
-        <Button onClick={setCreateRoom} className="w-[230px]">
+        <Button onClick={setCreateRoom} className="w-[235px]">
           Create Room
         </Button>
-        <Button className="w-[230px]">Join Room</Button>
+        <Button onClick={setJoinRoom} className="w-[235px]">
+          Join Room
+        </Button>
       </div>
       {isCreateRoom ? (
         <CreateRoomModal closeCreateRoomModal={closeCreateRoomModal} />
+      ) : (
+        ""
+      )}
+      {isJoinRoom ? (
+        <JoinRoomModal closeJoinRoomModal={closeJoinRoomModal} />
       ) : (
         ""
       )}
