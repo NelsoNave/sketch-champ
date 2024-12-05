@@ -5,12 +5,13 @@ import {
   readyRoom,
   deleteRoom,
 } from "../controllers/room.controller";
+import { auth } from "../middleware/auth";
 
 const router = express.Router();
 
-router.post("/", createRoom);
-router.post("/join", joinRoom);
-router.post("/:roomId/ready", readyRoom);
-router.post("/:roomId/delete", deleteRoom);
+router.put("/", auth, createRoom);
+router.post("/join", auth, joinRoom);
+router.post("/:roomId/ready", auth, readyRoom);
+router.post("/:roomId/delete", auth, deleteRoom);
 
 export default router;

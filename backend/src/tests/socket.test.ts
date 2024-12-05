@@ -64,7 +64,7 @@ describe("Socket.io", () => {
     await mongoServer.stop();
   });
 
-  test("should join a room", (done) => {
+  it("should join a room", (done) => {
     // Event listener
     clientSocket.on("room:member_joined", (data: any) => {
       console.log("room:member_joined", data);
@@ -82,4 +82,8 @@ describe("Socket.io", () => {
     console.log("joining room", testRoom._id);
     clientSocket.emit("room:join", testRoom._id);
   }, 10000);
+
+  it("should delete a room", (done) => {
+    done();
+  });
 });

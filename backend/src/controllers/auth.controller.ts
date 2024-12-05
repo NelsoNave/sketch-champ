@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model";
 import { AuthRequest } from "../models/auth.model";
 import mongoose from "mongoose";
+import { AppError, ValidationError, UnauthorizedError } from "../utils/errors";
 
 // create token
 const createToken = (userId: mongoose.Types.ObjectId | string) => {
@@ -10,15 +11,20 @@ const createToken = (userId: mongoose.Types.ObjectId | string) => {
 };
 
 // signup
-export const signup = async (req: Request, res: Response) => {
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { username, password } = req.body;
+    if (!username || !password)
+      throw new ValidationError("Username or password is missing");
 
     // username duplicate check
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      res.status(400).json({ message: "Username already registered" });
-      return;
+      throw new ValidationError("Username already registered");
     }
 
     // create user
@@ -42,28 +48,26 @@ export const signup = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error creating user" });
+    next(error);
   }
 };
 
 // login
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { username, password } = req.body;
 
     // search user
     const user = await User.findOne({ username });
-    if (!user) {
-      res.status(400).json({ message: "Invalid credentials" });
-      return;
-    }
+    if (!user) throw new UnauthorizedError("Invalid credentials");
 
     // password check
     const isValid = await user.comparePassword(password);
-    if (!isValid) {
-      res.status(400).json({ message: "Invalid credentials" });
-      return;
-    }
+    if (!isValid) throw new UnauthorizedError("Invalid credentials");
 
     // create token
     const token = createToken(user._id as mongoose.Types.ObjectId);
@@ -83,18 +87,22 @@ export const login = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in" });
+    next(error);
   }
 };
 
 // logout
-export const logout = (_req: Request, res: Response) => {
+export const logout = (_req: Request, res: Response, next: NextFunction) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });
 };
 
 // get current user info
-export const getMe = async (req: AuthRequest, res: Response) => {
+export const getMe = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const user = req.user;
     res.json({
@@ -104,6 +112,6 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user" });
+    next(error);
   }
 };

@@ -23,7 +23,7 @@ describe("Room API", () => {
   });
 
   it("should create a new room", async () => {
-    const response = await request(app).post("/api/room").send({
+    const response = await request(app).put("/api/room").send({
       codeword: "testroom",
       maxPlayers: 4,
       numberOfPrompts: 3,
