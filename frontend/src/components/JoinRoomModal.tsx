@@ -1,40 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useRoomStore } from "../store/useRoomStore";
 import Button from "./Button";
 
 interface JoinRoomModalProps {
   closeJoinRoomModal: () => void;
 }
 
+type FormData = {
+  codeword: string;
+};
+
 const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   closeJoinRoomModal,
 }) => {
-  const [codeword, setCodeword] = useState<string>("");
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { joinRoom } = useRoomStore();
 
-    try {
-      const response = await fetch("TEST_JOINEROOM_URL", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ codeword }),
-        credentials: "include",
-      });
+  // validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-
-      // todo : join a new room
-      alert("Room created successfully!");
-      closeJoinRoomModal();
-    } catch (error) {
-      console.error("Error creating room:", error);
-      alert("Failed to create room.");
-    }
+  const onSubmit = (data: FormData) => {
+    joinRoom(data.codeword);
+    closeJoinRoomModal();
   };
 
   return (
@@ -46,17 +37,23 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
             <img src="../../public/close.svg" alt="close button" />
           </button>
         </div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           {/* Codeword */}
           <div className="mb-4">
             <label className="text-xs font-semibold">Codeword</label>
             <input
               type="text"
-              value={codeword}
-              onChange={(e) => setCodeword(e.target.value)}
+              {...register("codeword", {
+                required: "Codeword is required",
+              })}
               className="w-full px-4 py-2 border-1.5 border-black rounded-lg text-sm h-[50px]"
               placeholder="Enter Codeword"
             />
+            {errors.codeword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.codeword.message}
+              </p>
+            )}
           </div>
           <Button className="w-full mt-4 text-2xl" variant="green">
             Join
