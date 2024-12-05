@@ -11,7 +11,7 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Home />}></Route>
-          <Route path="/room" element={<PendingRoom />}></Route>
+          <Route path="/:roomId/room" element={<PendingRoom />} />
         </Routes>
       </BrowserRouter>
     </div>

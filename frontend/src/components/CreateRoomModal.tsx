@@ -1,6 +1,8 @@
-import Button from "./Button";
-import { useRoomStore } from "../store/useRoomStore";
 import { useForm } from "react-hook-form";
+import { useRoomStore } from "../store/useRoomStore";
+import Button from "./Button";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 type FormData = {
   codeword: string;
@@ -14,20 +16,29 @@ const CreateRoomModal = ({
 }: {
   closeCreateRoomModal: () => void;
 }) => {
-  const { createRoom } = useRoomStore();
+  const { createRoom, roomId } = useRoomStore();
+  const navigate = useNavigate();
+
   // validation
   const { register, handleSubmit } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
+  useEffect(() => {
+    if (roomId) {
+      navigate(`/${roomId}/room`);
+    }
+  }, [roomId]);
+
+  const onSubmit = async (data: FormData) => {
     try {
-      createRoom({
+      await createRoom({
         codeword: data.codeword,
         maxPlayers: data.maxPlayers,
         numberOfPrompts: data.numberOfPrompts,
         timeLimit: data.timeLimit,
       });
-
-    closeCreateRoomModal();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

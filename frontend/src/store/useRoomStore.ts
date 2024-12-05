@@ -21,6 +21,7 @@ interface RoomStore {
   hostId: number;
   pending: boolean;
   drawer: boolean;
+  roomId: string;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -38,6 +39,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
   hostId: 0,
   pending: true,
   drawer: true,
+  roomId: "",
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -49,16 +51,19 @@ export const useRoomStore = create<RoomStore>((set) => ({
         timeLimit: roomSetting.timeLimit,
       });
 
+      const preUrl = res.data.room;
+
       set({
-        codeword: res.data.codeword,
-        hostId: res.data.hostId,
-        status: res.data.status,
+        codeword: preUrl.codeword,
+        hostId: preUrl.hostId,
+        status: preUrl.status,
         settings: {
-          maxPlayers: res.data.settings.maxPlayers,
-          numberOfPrompts: res.data.settings.numberOfPrompts,
-          timeLimit: res.data.settings.timeLimit,
+          maxPlayers: preUrl.settings.maxPlayers,
+          numberOfPrompts: preUrl.settings.numberOfPrompts,
+          timeLimit: preUrl.settings.timeLimit,
         },
-        theme: res.data.theme,
+        theme: preUrl.theme,
+        roomId: preUrl._id,
       });
     } catch (error) {
       if (error instanceof AxiosError) {
