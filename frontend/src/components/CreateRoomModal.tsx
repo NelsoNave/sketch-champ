@@ -19,12 +19,13 @@ const CreateRoomModal = ({
   const { register, handleSubmit } = useForm<FormData>();
 
   const onSubmit = (data: FormData) => {
-    createRoom({
-      codeword: data.codeword,
-      maxPlayers: data.maxPlayers,
-      numberOfPrompts: data.numberOfPrompts,
-      timeLimit: data.timeLimit,
-    });
+    try {
+      createRoom({
+        codeword: data.codeword,
+        maxPlayers: data.maxPlayers,
+        numberOfPrompts: data.numberOfPrompts,
+        timeLimit: data.timeLimit,
+      });
 
     closeCreateRoomModal();
   };
