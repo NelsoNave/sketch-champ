@@ -1,12 +1,13 @@
 import DrawingCanvas from "./DrawingCanvas";
 import Button from "./Button";
+import { useRoomStore } from "../store/useRoomStore";
 
 type Props = {};
 
 const Room = (props: Props) => {
-  const handleGetReady = () => {
-    // let the server know that user is ready.
-  };
+  const handleGetReady = () => {};
+
+  const { settings, pending, drawer } = useRoomStore();
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 mt-5">
