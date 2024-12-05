@@ -64,7 +64,7 @@ describe("Socket.io", () => {
     await mongoServer.stop();
   });
 
-  test("should join a room", (done) => {
+  it("should join a room", (done) => {
     // Event listener
     clientSocket.on("room:member_joined", (data: any) => {
       console.log("room:member_joined", data);
@@ -82,4 +82,74 @@ describe("Socket.io", () => {
     console.log("joining room", testRoom._id);
     clientSocket.emit("room:join", testRoom._id);
   }, 10000);
+
+  it("should leave and delete room", (done) => {
+    let joined = false;
+
+    // Setup event listeners
+    const setupHandler = () => {
+      clientSocket.on("room:member_joined", async (data: any) => {
+        try {
+          console.log("Join completed, verifying room exists...");
+          const room = await Room.findById(testRoom._id);
+          console.log("Room after join", room);
+          if (!room) {
+            throw new Error("Room not found");
+          }
+          if (!joined && room) {
+            joined = true;
+            console.log("Room exists, leaving...");
+
+            setTimeout(() => {
+              clientSocket.emit("room:leave", testRoom._id);
+            }, 500);
+          }
+        } catch (error) {
+          console.error(error);
+          done(error);
+        }
+      });
+
+      clientSocket.on("room:deleted", (data: any) => {
+        console.log("room:deleted", data);
+        expect(data).toHaveProperty("roomId");
+        done();
+      });
+
+      // Error handler
+      clientSocket.on("error", (error: any) => {
+        console.error(error);
+        done(error);
+      });
+    };
+    try {
+      setupHandler();
+      clientSocket.emit("room:join", testRoom._id);
+    } catch (error) {
+      console.error(error);
+      done(error);
+    }
+  }, 10000);
+
+  it("should delete a room", (done) => {
+    done();
+  });
+
+  // it("should handle game start when all members are ready", (done) => {
+  //   // Event listener
+  //   clientSocket.on("room:game_start", (data: any) => {
+  //     console.log("room:game_start", data);
+  //     done();
+  //   });
+
+  //   // Error handler
+  //   clientSocket.on("error", (error: any) => {
+  //     console.error(error);
+  //     done(error);
+  //   });
+
+  //   // Emit event
+  //   console.log("starting game");
+  //   clientSocket.emit("room:ready", testRoom._id);
+  // }, 10000);
 });

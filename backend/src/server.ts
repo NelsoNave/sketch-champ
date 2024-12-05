@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.routes";
 import roomRoutes from "./routes/room.routes";
 import { initializeSocket } from "./socket";
 import { mockAuth } from "./middleware/auth";
+import { errorHandler } from "./middleware/error";
 dotenv.config();
 
 // Create server
@@ -32,6 +33,9 @@ if (process.env.NODE_ENV === "test") {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/room", roomRoutes);
+
+// Error handling
+app.use(errorHandler);
 
 // Create HTTP server
 const httpServer = createServer(app);
