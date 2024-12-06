@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import Home from "./components/Home";
+import Result from "./components/Result";
 
 function App() {
   const { checkAuth, checkingAuth } = useAuthStore();
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/:roomId/room" element={<PendingRoom />} />
+          <Route path="/:roomId/result" element={<Result />} />
         </Routes>
       </BrowserRouter>
       <Toaster />
