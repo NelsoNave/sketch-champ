@@ -4,6 +4,8 @@ import { useRoomStore } from "../store/useRoomStore";
 import { registerSocketHandlers } from "../socket/handlers";
 
 const DrawingCanvas = () => {
+  const CANVAS_WIDTH = 800;
+  const CANVAS_HEIGHT = 600;
   const socket = getSocket();
   const colors = ["black", "red", "green", "blue", "yellow", "purple"];
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -17,16 +19,17 @@ const DrawingCanvas = () => {
     type: "start" | "move" | "end"
   ) => {
     const canvas = canvasRef.current as HTMLCanvasElement;
-
-    if (!canvas) {
-      console.error("Canvas not found");
-      return;
-    }
-    console.log("emitDraw", type);
+    if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.nativeEvent.offsetX - rect.left;
-    const y = e.nativeEvent.offsetY - rect.top;
+    // const x = e.nativeEvent.offsetX - rect.left;
+    // const y = e.nativeEvent.offsetY - rect.top;
+    const scaleX = CANVAS_WIDTH / rect.width;
+    const scaleY = CANVAS_HEIGHT / rect.height;
+
+    // convert to canvas coordinate
+    const x = e.nativeEvent.offsetX * scaleX;
+    const y = e.nativeEvent.offsetY * scaleY;
 
     socket.emit("room:draw", {
       x,
@@ -35,7 +38,6 @@ const DrawingCanvas = () => {
       color: contextRef.current?.strokeStyle || "black",
       roomId,
     });
-    console.log("emitDraw sent");
   };
 
   const beginDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -99,9 +101,11 @@ const DrawingCanvas = () => {
     const container = containerRef.current as HTMLDivElement;
     if (!canvas || !container) return;
 
-    const { width, height } = container.getBoundingClientRect();
-    canvas.width = width;
-    canvas.height = height;
+    //const { width, height } = container.getBoundingClientRect();
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    canvas.style.width = "100%";
+    canvas.style.height = "auto";
 
     const context = canvas.getContext("2d");
     if (context) {
