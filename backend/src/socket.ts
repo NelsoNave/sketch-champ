@@ -4,6 +4,7 @@ import { verifyUser } from "./middleware/auth";
 import { Server as HttpServer } from "http";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import { Room } from "./models/room.model";
 import { User } from "./models/user.model";
 dotenv.config();
 
@@ -18,6 +19,11 @@ export const initializeSocket = (httpServer: HttpServer) => {
   // Debug middleware
   io.use((socket, next) => {
     console.log("Socket middleware - New connection attempt:", socket.id);
+    // Event listener
+    socket.onAny((eventName, ...args) => {
+      console.log(`Received event "${eventName}"`, args);
+    });
+
     next();
   });
 
@@ -35,7 +41,6 @@ export const initializeSocket = (httpServer: HttpServer) => {
         return next();
       }
       const cookie = socket.handshake.headers.cookie;
-      console.log("cookie", cookie);
       const token = cookie
         ?.split("; ")
         ?.find((row) => row.startsWith("token="))
@@ -62,8 +67,19 @@ export const initializeSocket = (httpServer: HttpServer) => {
     // Initialize room handlers
     createRoomHandler(io, socket);
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       console.log("User disconnected:", socket.user?.username);
+      const rooms = await Room.find({
+        members: { $elemMatch: { userId: socket.user?._id } },
+      });
+      // handle disconnect
+      for (const room of rooms) {
+        if (room._id !== socket.id) {
+          await createRoomHandler(io, socket).handleLeaveRoom(
+            room._id as string
+          );
+        }
+      }
     });
   });
 

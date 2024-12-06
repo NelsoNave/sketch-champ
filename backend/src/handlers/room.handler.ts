@@ -51,7 +51,6 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
 
       // success
       socket.join(roomId);
-
       // send room info to client
       socket.emit("room:joined", {
         roomId,
@@ -181,4 +180,11 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
   socket.on("room:ready", handleReady);
   socket.on("room:leave", handleLeaveRoom);
   socket.on("room:draw", handleDraw);
+
+  return {
+    handleJoinRoom,
+    handleLeaveRoom,
+    handleReady,
+    handleDraw,
+  };
 };
