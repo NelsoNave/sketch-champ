@@ -59,14 +59,7 @@ export const joinRoom = async (
     }
 
     if (!req.user || !req.user._id) throw new UnauthorizedError("Unauthorized");
-    // add user to room
-    room.members.push({
-      userId: req.user._id,
-      isReady: false,
-      joinedAt: new Date(),
-    });
-    await room.save();
-
+    // don't add user in controller, add in socket
     res.status(200).json({ room });
   } catch (error) {
     next(error);

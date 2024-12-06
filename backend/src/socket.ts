@@ -15,6 +15,12 @@ export const initializeSocket = (httpServer: HttpServer) => {
     },
   });
 
+  // Debug middleware
+  io.use((socket, next) => {
+    console.log("Socket middleware - New connection attempt:", socket.id);
+    next();
+  });
+
   // Socket Authentication Middleware
   io.use(async (socket, next) => {
     try {
@@ -28,8 +34,14 @@ export const initializeSocket = (httpServer: HttpServer) => {
         socket.user = mockUser;
         return next();
       }
-      const token = socket.handshake.auth.token;
+      const cookie = socket.handshake.headers.cookie;
+      console.log("cookie", cookie);
+      const token = cookie
+        ?.split("; ")
+        ?.find((row) => row.startsWith("token="))
+        ?.split("=")[1];
       if (!token) {
+        console.log("No token provided");
         return next(new Error("Authentication required"));
       }
 
@@ -38,6 +50,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
       socket.user = user;
       next();
     } catch (error) {
+      console.error("Authentication failed", error);
       next(new Error("Authentication failed"));
     }
   });
