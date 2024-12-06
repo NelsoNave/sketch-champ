@@ -5,16 +5,17 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
   // Join room
   const handleJoinRoom = async (roomId: string) => {
     try {
+      // check and update room
       const room = await Room.findOneAndUpdate(
         {
           _id: roomId,
+          "members.userId": { $ne: socket.user?._id }, // user is not joined
           $expr: {
-            $lt: [{ $size: "$members" }, "$settings.maxPlayers"],
+            $lt: [{ $size: "$members" }, "$settings.maxPlayers"], // room is not full
           },
         },
         {
           $addToSet: {
-            // 重複を防ぐために $addToSet を使用
             members: {
               userId: socket.user?._id,
               isReady: false,
@@ -27,26 +28,47 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
           runValidators: true,
         }
       );
+
       if (!room) {
-        socket.emit("error", { message: "Room not found" });
+        // check if already joined or room not found
+        const existingRoom = await Room.findById(roomId);
+        if (!existingRoom) {
+          socket.emit("error", { message: "Room not found" });
+          return;
+        }
+
+        const isMember = existingRoom.members.some((m) =>
+          m.userId.equals(socket.user?._id)
+        );
+        if (isMember) {
+          socket.emit("error", { message: "You are already in this room" });
+          return;
+        }
+
+        socket.emit("error", { message: "Room is full" });
         return;
       }
 
-      // Join socket room
+      // success
       socket.join(roomId);
-
-      // Notify other members
-      io.to(roomId).emit("room:member_joined", {
+      // send room info to client
+      socket.emit("room:joined", {
+        roomId,
+        members: room.members,
+        settings: room.settings,
+      });
+      console.log("room:joined", room.members);
+      // notify other members
+      socket.to(roomId).emit("room:member_joined", {
         userId: socket.user?._id,
         username: socket.user?.username,
         joinedAt: new Date(),
       });
     } catch (error) {
-      console.error("Error in handleJoinRoom", error);
+      console.error("Error in handleJoinRoom:", error);
       socket.emit("error", { message: "Failed to join room" });
     }
   };
-
   // Leave room
   const handleLeaveRoom = async (roomId: string) => {
     try {
@@ -60,9 +82,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
         socket.emit("error", { message: "Room not found" });
         return;
       }
-      console.log("room", room);
-
-      console.log("check user on socket", socket.user?._id);
+      console.log("check user on socket", socket.user?.username);
       // Remove member from room
       room.members = room.members.filter(
         (m) => !m.userId.equals(socket.user?._id)
@@ -74,7 +94,6 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
         socket.leave(roomId);
         return;
       }
-      console.log("Deleted room");
       // If host leaves, assign new host
       if (room.hostId.equals(socket.user?._id)) {
         room.hostId = room.members[0].userId;
@@ -112,6 +131,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
         member.isReady = !member.isReady;
         await room.save();
 
+        console.log("room:member_ready");
         // Broadcast ready status change
         io.to(roomId).emit("room:member_ready", {
           userId: socket.user?._id,
@@ -122,6 +142,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
         // Check if all members are ready
         const allReady = room.members.every((m) => m.isReady);
         if (allReady) {
+          console.log("room:game_start", roomId);
           io.to(roomId).emit("room:game_start", {
             roomId,
             startTime: new Date(),
@@ -137,8 +158,61 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
   };
 
+  // Draw
+  interface Point {
+    x: number;
+    y: number;
+  }
+  const handleDraw = async (data: {
+    points: Point[];
+    type: "start" | "move" | "end";
+    color: string;
+    roomId: string;
+  }) => {
+    try {
+      // check if room is active
+      const room = await Room.findById(data.roomId);
+      // active or pending
+      if (room?.status !== "active" && room?.status !== "pending") {
+        socket.emit("error", { message: "Room is not active" });
+        return;
+      }
+      // check if user is in the room
+      const member = room.members.find((m) =>
+        m.userId.equals(socket.user?._id)
+      );
+      if (!member) {
+        socket.emit("error", { message: "You are not in this room" });
+        return;
+      }
+      // check if joined in socket
+      if (!socket.rooms.has(data.roomId)) {
+        console.log("somehow not joined in socket", data.roomId);
+        socket.join(data.roomId);
+      }
+
+      // Broadcast draw event to all members in the room except the sender
+      socket.to(data.roomId).emit("room:draw_sync", data);
+
+      // Debug
+      console.log("room:draw_sync", data);
+      console.log("socket.rooms", socket.rooms);
+    } catch (error) {
+      console.error("Error in handleDraw", error);
+      socket.emit("error", { message: "Failed to draw" });
+    }
+  };
+
   // Register event handlers
   socket.on("room:join", handleJoinRoom);
   socket.on("room:ready", handleReady);
   socket.on("room:leave", handleLeaveRoom);
+  socket.on("room:draw", handleDraw);
+
+  return {
+    handleJoinRoom,
+    handleLeaveRoom,
+    handleReady,
+    handleDraw,
+  };
 };

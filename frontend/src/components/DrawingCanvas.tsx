@@ -1,108 +1,142 @@
 import React, { useState, useEffect, useRef } from "react";
+import { getSocket } from "../socket/socket.client";
+import { useRoomStore } from "../store/useRoomStore";
 
-interface Props {}
-
-const DrawingCanvas = (props: Props) => {
+interface Point {
+  x: number;
+  y: number;
+}
+interface Path {
+  points: Point[];
+  color: string;
+}
+const DrawingCanvas = () => {
+  const socket = getSocket();
+  const { roomId } = useRoomStore();
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [currentPath, setCurrentPath] = useState<Point[]>([]);
+  const [paths, setPaths] = useState<Path[]>([]);
+  const [currentColor, setCurrentColor] = useState("black");
   const colors = ["black", "red", "green", "blue", "yellow", "purple"];
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  const [isPressed, setIsPressed] = useState(false);
+  const getCoordinates = (e: React.MouseEvent<SVGSVGElement>): Point => {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, y: 0 };
+    console.log("ss");
+    const point = svg.createSVGPoint();
+    point.x = e.clientX;
+    point.y = e.clientY;
 
-  const beginDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    contextRef.current?.beginPath();
-    contextRef.current?.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    setIsPressed(true);
+    // SVGの座標系に変換
+    const transformedPoint = point.matrixTransform(
+      svg.getScreenCTM()?.inverse()
+    );
+
+    return {
+      x: transformedPoint.x,
+      y: transformedPoint.y,
+    };
   };
 
-  const endDraw = () => {
-    setIsPressed(false);
+  const startDrawing = (e: React.MouseEvent<SVGSVGElement>) => {
+    const point = getCoordinates(e);
+    setIsDrawing(true);
+    setCurrentPath([point]);
   };
 
-  const updateDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isPressed) return;
-    const context = contextRef.current;
-    if (!context) return;
-    context.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    context.stroke();
+  const draw = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDrawing) return;
+
+    const point = getCoordinates(e);
+    setCurrentPath((prev) => [...prev, point]);
   };
 
-  const clearCanvas = () => {
-    const canvas = canvasRef.current as HTMLCanvasElement;
-    const context = canvas.getContext("2d");
-    if (context) context.clearRect(0, 0, canvas.width, canvas.height);
-  };
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    setPaths((prev) => [...prev, { points: currentPath, color: currentColor }]);
 
-  const setStrokeColor = (color: string) => {
-    const context = contextRef.current;
-    if (context) context.strokeStyle = color;
-  };
-
-  const handleTouch = (
-    e: React.TouchEvent<HTMLCanvasElement>,
-    type: "start" | "move"
-  ) => {
-    const touch = e.touches[0];
-    const canvas = canvasRef.current as HTMLCanvasElement;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const offsetX = touch.clientX - rect.left;
-    const offsetY = touch.clientY - rect.top;
-
-    if (type === "start") {
-      contextRef.current?.beginPath();
-      contextRef.current?.moveTo(offsetX, offsetY);
-      setIsPressed(true);
-    } else if (type === "move" && isPressed) {
-      contextRef.current?.lineTo(offsetX, offsetY);
-      contextRef.current?.stroke();
-    }
+    socket.emit("room:draw", {
+      type: "end",
+      points: currentPath,
+      color: currentColor,
+      roomId,
+    });
   };
 
   useEffect(() => {
-    const canvas = canvasRef.current as HTMLCanvasElement;
-    const container = containerRef.current as HTMLDivElement;
-    if (!canvas || !container) return;
+    if (!socket) return;
 
-    const { width, height } = container.getBoundingClientRect();
-    canvas.width = width;
-    canvas.height = height;
+    const handleDrawSync = (data: {
+      type: "end";
+      points: Point[];
+      color: string;
+    }) => {
+      setPaths((prev) => [...prev, { points: data.points, color: data.color }]);
+    };
 
-    const context = canvas.getContext("2d");
-    if (context) {
-      context.lineCap = "round";
-      context.strokeStyle = "black";
-      context.lineWidth = 5;
-      contextRef.current = context;
-    }
-  }, []);
+    socket.on("room:draw_sync", handleDrawSync);
+    return () => {
+      socket.off("room:draw_sync", handleDrawSync);
+    };
+  }, [socket]);
+
+  const getPathData = (points: Point[]) => {
+    if (points.length === 0) return "";
+    return (
+      `M ${points[0].x} ${points[0].y} ` +
+      points
+        .slice(1)
+        .map((point) => `L ${point.x} ${point.y}`)
+        .join(" ")
+    );
+  };
 
   return (
-    <div
-      ref={containerRef}
-      className="h-[480px] rounded-xl border-2 border-black bg-white"
-    >
-      <canvas
-        ref={canvasRef}
-        onMouseDown={beginDraw}
-        onMouseMove={updateDraw}
-        onMouseUp={endDraw}
-        onTouchStart={(e) => handleTouch(e, "start")}
-        onTouchMove={(e) => handleTouch(e, "move")}
-        onTouchEnd={endDraw}
-      ></canvas>
+    <div className="h-[480px] rounded-xl border-2 border-black bg-white">
+      <svg
+        ref={svgRef}
+        className="w-full h-full"
+        viewBox="0 0 800 600"
+        preserveAspectRatio="xMidYMid meet"
+        onMouseDown={startDrawing}
+        onMouseMove={draw}
+        onMouseUp={stopDrawing}
+        onMouseLeave={stopDrawing}
+      >
+        {paths.map((path, index) => (
+          <path
+            key={index}
+            d={getPathData(path.points)}
+            stroke={path.color}
+            strokeWidth="4"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+        {/* 現在描画中のパス */}
+        {isDrawing && (
+          <path
+            d={getPathData(currentPath)}
+            stroke={currentColor}
+            strokeWidth="4"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
+      </svg>
       <div className="tools flex rounded-md p-3 gap-3">
         {colors.map((color) => (
           <button
             key={color}
             className="w-8 h-8 rounded-full"
             style={{ backgroundColor: color }}
-            onClick={() => setStrokeColor(color)}
-          ></button>
+            onClick={() => setCurrentColor(color)}
+          />
         ))}
-        <button onClick={clearCanvas}>
+        <button onClick={() => setCurrentPath([])}>
           <img src="/trash.png" alt="" className="w-7" />
         </button>
       </div>

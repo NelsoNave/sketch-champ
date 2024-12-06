@@ -8,6 +8,7 @@ export const initializeSocket = (userId: string) => {
     socket.disconnect();
   }
   socket = io(SOCKET_URL, {
+    withCredentials: true, // send cookie
     auth: { userId },
   });
 };
