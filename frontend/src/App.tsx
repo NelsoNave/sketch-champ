@@ -8,11 +8,15 @@ import { useEffect } from "react";
 import Home from "./components/Home";
 
 function App() {
-  const { checkAuth, authUser } = useAuthStore();
+  const { checkAuth, checkingAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
-  }, [authUser]);
+  }, []);
+
+  if (checkingAuth) {
+    return null;
+  }
 
   return (
     <div className="App h-screen px-6 sm:px-10 lg:px-24">
