@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { axiosInstance } from "../lib/axios";
 import { Room } from "../types/room.type";
 import { getSocket } from "../socket/socket.client";
+import toast from "react-hot-toast";
 
 type RoomSettings = {
   maxPlayers: number;
@@ -67,11 +68,13 @@ export const useRoomStore = create<RoomStore>((set) => ({
         theme: preUrl.theme,
         roomId: preUrl._id,
       });
+
+      toast.success("The game is starting soon!");
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error(error.response?.data);
+        toast.error(error.response?.data.message);
       } else {
-        console.error(error);
+        toast.error("An unexpected error occurred");
       }
     }
   },
@@ -82,11 +85,12 @@ export const useRoomStore = create<RoomStore>((set) => ({
         codeword,
       });
       set({ roomJoinId: res.data.room._id });
+      toast.success("The game is starting soon!");
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error(error.response?.data);
+        toast.error(error.response?.data.message);
       } else {
-        console.error(error);
+        toast.error("An unexpected error occurred");
       }
     }
   },

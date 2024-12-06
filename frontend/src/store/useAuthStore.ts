@@ -44,10 +44,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const res = await axiosInstance.post("/auth/signup", user);
       set({ authUser: res.data.user });
       initializeSocket(res.data.user.id);
+      toast.success("Sign up successful! Welcome aboard!");
     } catch (error) {
-      console.log(error);
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
+      } else {
+        toast.error("An unexpected error occurred");
       }
     } finally {
       set({ loading: false });
@@ -60,10 +62,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const res = await axiosInstance.post("/auth/login", loginUser);
       set({ authUser: res.data.user });
       initializeSocket(res.data.user.id);
+      toast.success("Login successful! Welcome back!");
     } catch (error) {
-      console.log(error);
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
+      } else {
+        toast.error("An unexpected error occurred");
       }
     } finally {
       set({ loading: false });
@@ -79,7 +83,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error);
+      toast.error("An unexpected error occurred");
     }
   },
 
