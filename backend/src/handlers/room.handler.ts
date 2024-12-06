@@ -167,8 +167,33 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     roomId: string;
   }) => {
     try {
+      // check if room is active
+      const room = await Room.findById(data.roomId);
+      // active or pending
+      if (room?.status !== "active" && room?.status !== "pending") {
+        socket.emit("error", { message: "Room is not active" });
+        return;
+      }
+      // check if user is in the room
+      const member = room.members.find((m) =>
+        m.userId.equals(socket.user?._id)
+      );
+      if (!member) {
+        socket.emit("error", { message: "You are not in this room" });
+        return;
+      }
+      // check if joined in socket
+      if (!socket.rooms.has(data.roomId)) {
+        console.log("somehow not joined in socket", data.roomId);
+        socket.join(data.roomId);
+      }
+
       // Broadcast draw event to all members in the room except the sender
       socket.to(data.roomId).emit("room:draw_sync", data);
+
+      // Debug
+      console.log("room:draw_sync", data);
+      console.log("socket.rooms", socket.rooms);
     } catch (error) {
       console.error("Error in handleDraw", error);
       socket.emit("error", { message: "Failed to draw" });

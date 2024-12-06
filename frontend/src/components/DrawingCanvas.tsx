@@ -1,23 +1,53 @@
 import React, { useState, useEffect, useRef } from "react";
+import { getSocket } from "../socket/socket.client";
+import { useRoomStore } from "../store/useRoomStore";
+import { registerSocketHandlers } from "../socket/handlers";
 
-interface Props {}
-
-const DrawingCanvas = (props: Props) => {
+const DrawingCanvas = () => {
+  const socket = getSocket();
   const colors = ["black", "red", "green", "blue", "yellow", "purple"];
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-
+  const { roomId } = useRoomStore();
   const [isPressed, setIsPressed] = useState(false);
+
+  const emitDraw = (
+    e: React.MouseEvent<HTMLCanvasElement>,
+    type: "start" | "move" | "end"
+  ) => {
+    const canvas = canvasRef.current as HTMLCanvasElement;
+
+    if (!canvas) {
+      console.error("Canvas not found");
+      return;
+    }
+    console.log("emitDraw", type);
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.nativeEvent.offsetX - rect.left;
+    const y = e.nativeEvent.offsetY - rect.top;
+
+    socket.emit("room:draw", {
+      x,
+      y,
+      type,
+      color: contextRef.current?.strokeStyle || "black",
+      roomId,
+    });
+    console.log("emitDraw sent");
+  };
 
   const beginDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
     contextRef.current?.beginPath();
     contextRef.current?.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
     setIsPressed(true);
+    emitDraw(e, "start");
   };
 
-  const endDraw = () => {
+  const endDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setIsPressed(false);
+    emitDraw(e, "end");
   };
 
   const updateDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -26,6 +56,7 @@ const DrawingCanvas = (props: Props) => {
     if (!context) return;
     context.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
     context.stroke();
+    emitDraw(e, "move");
   };
 
   const clearCanvas = () => {
@@ -41,7 +72,7 @@ const DrawingCanvas = (props: Props) => {
 
   const handleTouch = (
     e: React.TouchEvent<HTMLCanvasElement>,
-    type: "start" | "move"
+    type: "start" | "move" | "end"
   ) => {
     const touch = e.touches[0];
     const canvas = canvasRef.current as HTMLCanvasElement;
@@ -58,6 +89,8 @@ const DrawingCanvas = (props: Props) => {
     } else if (type === "move" && isPressed) {
       contextRef.current?.lineTo(offsetX, offsetY);
       contextRef.current?.stroke();
+    } else if (type === "end") {
+      setIsPressed(false);
     }
   };
 
@@ -77,6 +110,37 @@ const DrawingCanvas = (props: Props) => {
       context.lineWidth = 5;
       contextRef.current = context;
     }
+    console.log("roomStore", roomId);
+    // sync draw
+    const handleDrawSync = (data: {
+      x: number;
+      y: number;
+      type: "start" | "move" | "end";
+      color: string;
+    }) => {
+      console.log("handleDrawSync", data);
+      const context = contextRef.current;
+      if (!context) return;
+
+      // 受信した色を設定
+      context.strokeStyle = data.color;
+
+      if (data.type === "start") {
+        context.beginPath();
+        context.moveTo(data.x, data.y);
+      } else if (data.type === "move") {
+        context.lineTo(data.x, data.y);
+        context.stroke();
+      }
+      // endの場合は特に何もしない
+    };
+    if (socket) socket.on("room:draw_sync", handleDrawSync);
+
+    const cleanup = registerSocketHandlers(socket, context);
+    return () => {
+      cleanup();
+      if (socket) socket.off("room:draw_sync", handleDrawSync);
+    };
   }, []);
 
   return (
@@ -91,7 +155,7 @@ const DrawingCanvas = (props: Props) => {
         onMouseUp={endDraw}
         onTouchStart={(e) => handleTouch(e, "start")}
         onTouchMove={(e) => handleTouch(e, "move")}
-        onTouchEnd={endDraw}
+        onTouchEnd={(e) => handleTouch(e, "end")}
       ></canvas>
       <div className="tools flex rounded-md p-3 gap-3">
         {colors.map((color) => (
