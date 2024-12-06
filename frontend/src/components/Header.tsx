@@ -1,16 +1,19 @@
 import { useState } from "react";
 import LoginModal from "./LoginModal";
 import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const { logout, authUser } = useAuthStore();
+  const navigate = useNavigate();
 
   // logout
   const onLogoutClick = () => {
     logout();
+    navigate("/");
   };
 
   return (
