@@ -2,6 +2,7 @@ import "./App.css";
 import Header from "./components/Header";
 import PendingRoom from "./components/PendingRoom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Home from "./components/Home";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="/:roomId/room" element={<PendingRoom />} />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </div>
   );
 }
