@@ -9,7 +9,7 @@ import { auth } from "../middleware/auth";
 
 const router = express.Router();
 
-router.put("/", auth, createRoom);
+router.post("/", auth, createRoom);
 router.post("/join", auth, joinRoom);
 router.post("/:roomId/ready", auth, readyRoom);
 router.post("/:roomId/delete", auth, deleteRoom);
