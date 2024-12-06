@@ -25,10 +25,10 @@ const Home = () => {
         <p className="font-poppins">Who’s the Best Artist? Let’s Find Out!</p>
       </div>
       <div className="flex flex-col gap-8 md:flex-row justify-center">
-        <Button onClick={setCreateRoom} className="w-[235px]">
+        <Button onClick={setCreateRoom} className="w-[240px]">
           Create Room
         </Button>
-        <Button onClick={setJoinRoom} className="w-[235px]">
+        <Button onClick={setJoinRoom} className="w-[240px]">
           Join Room
         </Button>
       </div>

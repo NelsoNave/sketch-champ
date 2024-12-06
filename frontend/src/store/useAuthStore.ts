@@ -10,7 +10,6 @@ type User = {
 };
 
 interface AuthStore {
-  isLoggedIn: boolean;
   authUser: User | null;
   checkingAuth: boolean;
   loading: boolean;
@@ -30,7 +29,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
     try {
       const res = await axiosInstance.get("/auth/me");
       set({ authUser: res.data.user });
-      set({ isLoggedIn: true });
       initializeSocket(res.data.user.id);
     } catch (error) {
       set({ authUser: null });
@@ -61,7 +59,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ loading: true });
       const res = await axiosInstance.post("/auth/login", loginUser);
       set({ authUser: res.data.user });
-      set({ isLoggedIn: true });
       initializeSocket(res.data.user.id);
     } catch (error) {
       console.log(error);
@@ -79,7 +76,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
       disconnectSocket();
       if (res.status === 200) {
         set({ authUser: null });
-        set({ isLoggedIn: false });
         toast.success(res.data.message);
       }
     } catch (error) {
