@@ -3,9 +3,17 @@ import Header from "./components/Header";
 import PendingRoom from "./components/PendingRoom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useAuthStore } from "./store/useAuthStore";
+import { useEffect } from "react";
 import Home from "./components/Home";
 
 function App() {
+  const { checkAuth, authUser } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [authUser]);
+
   return (
     <div className="App h-screen px-6 sm:px-10 lg:px-24">
       <BrowserRouter>
