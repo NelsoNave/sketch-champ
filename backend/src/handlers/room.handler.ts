@@ -159,9 +159,12 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
   };
 
   // Draw
-  const handleDraw = async (data: {
+  interface Point {
     x: number;
     y: number;
+  }
+  const handleDraw = async (data: {
+    points: Point[];
     type: "start" | "move" | "end";
     color: string;
     roomId: string;

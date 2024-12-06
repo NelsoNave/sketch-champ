@@ -6,20 +6,24 @@ interface Point {
   x: number;
   y: number;
 }
-
+interface Path {
+  points: Point[];
+  color: string;
+}
 const DrawingCanvas = () => {
   const socket = getSocket();
   const { roomId } = useRoomStore();
   const svgRef = useRef<SVGSVGElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPath, setCurrentPath] = useState<Point[]>([]);
+  const [paths, setPaths] = useState<Path[]>([]);
   const [currentColor, setCurrentColor] = useState("black");
   const colors = ["black", "red", "green", "blue", "yellow", "purple"];
 
   const getCoordinates = (e: React.MouseEvent<SVGSVGElement>): Point => {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
-
+    console.log("ss");
     const point = svg.createSVGPoint();
     point.x = e.clientX;
     point.y = e.clientY;
@@ -39,13 +43,6 @@ const DrawingCanvas = () => {
     const point = getCoordinates(e);
     setIsDrawing(true);
     setCurrentPath([point]);
-
-    socket.emit("room:draw", {
-      type: "start",
-      points: [point],
-      color: currentColor,
-      roomId,
-    });
   };
 
   const draw = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -53,17 +50,12 @@ const DrawingCanvas = () => {
 
     const point = getCoordinates(e);
     setCurrentPath((prev) => [...prev, point]);
-
-    socket.emit("room:draw", {
-      type: "move",
-      points: [point],
-      color: currentColor,
-      roomId,
-    });
   };
 
   const stopDrawing = () => {
     setIsDrawing(false);
+    setPaths((prev) => [...prev, { points: currentPath, color: currentColor }]);
+
     socket.emit("room:draw", {
       type: "end",
       points: currentPath,
@@ -76,15 +68,11 @@ const DrawingCanvas = () => {
     if (!socket) return;
 
     const handleDrawSync = (data: {
-      type: "start" | "move" | "end";
+      type: "end";
       points: Point[];
       color: string;
     }) => {
-      if (data.type === "start") {
-        setCurrentPath(data.points);
-      } else if (data.type === "move") {
-        setCurrentPath((prev) => [...prev, ...data.points]);
-      }
+      setPaths((prev) => [...prev, { points: data.points, color: data.color }]);
     };
 
     socket.on("room:draw_sync", handleDrawSync);
@@ -93,14 +81,16 @@ const DrawingCanvas = () => {
     };
   }, [socket]);
 
-  const pathData =
-    currentPath.length > 0
-      ? `M ${currentPath[0].x} ${currentPath[0].y} ` +
-        currentPath
-          .slice(1)
-          .map((point) => `L ${point.x} ${point.y}`)
-          .join(" ")
-      : "";
+  const getPathData = (points: Point[]) => {
+    if (points.length === 0) return "";
+    return (
+      `M ${points[0].x} ${points[0].y} ` +
+      points
+        .slice(1)
+        .map((point) => `L ${point.x} ${point.y}`)
+        .join(" ")
+    );
+  };
 
   return (
     <div className="h-[480px] rounded-xl border-2 border-black bg-white">
@@ -114,14 +104,28 @@ const DrawingCanvas = () => {
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
       >
-        <path
-          d={pathData}
-          stroke={currentColor}
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        {paths.map((path, index) => (
+          <path
+            key={index}
+            d={getPathData(path.points)}
+            stroke={path.color}
+            strokeWidth="4"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+        {/* 現在描画中のパス */}
+        {isDrawing && (
+          <path
+            d={getPathData(currentPath)}
+            stroke={currentColor}
+            strokeWidth="4"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
       </svg>
       <div className="tools flex rounded-md p-3 gap-3">
         {colors.map((color) => (

@@ -60,7 +60,6 @@ export const createRoomHandler = (socket: Socket) => {
   socket.on("room:joined", handleRoomJoined);
   socket.on("room:member_ready", handleRoomReady);
   socket.on("room:game_start", handleGameStart);
-
   socket.on("error", handleError);
 
   // Return cleanup function
