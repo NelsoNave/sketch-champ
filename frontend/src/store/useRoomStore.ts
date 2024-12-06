@@ -30,6 +30,21 @@ interface RoomStore {
   clearRoomId: () => void;
 }
 
+const setRoomSettings = (prefix: any) => {
+  return {
+    codeword: prefix.codeword,
+    hostId: prefix.hostId,
+    status: prefix.status,
+    settings: {
+      maxPlayers: prefix.settings.maxPlayers,
+      numberOfPrompts: prefix.settings.numberOfPrompts,
+      timeLimit: prefix.settings.timeLimit,
+    },
+    theme: prefix.theme,
+    roomId: prefix._id,
+  };
+};
+
 export const useRoomStore = create<RoomStore>((set) => ({
   codeword: "",
   maxPlayers: 2,
@@ -53,20 +68,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
         timeLimit: roomSetting.timeLimit,
       });
 
-      const preUrl = res.data.room;
-
-      set({
-        codeword: preUrl.codeword,
-        hostId: preUrl.hostId,
-        status: preUrl.status,
-        settings: {
-          maxPlayers: preUrl.settings.maxPlayers,
-          numberOfPrompts: preUrl.settings.numberOfPrompts,
-          timeLimit: preUrl.settings.timeLimit,
-        },
-        theme: preUrl.theme,
-        roomId: preUrl._id,
-      });
+      set(setRoomSettings(res.data.room));
 
       toast.success("The game is starting soon!");
     } catch (error) {
@@ -83,7 +85,8 @@ export const useRoomStore = create<RoomStore>((set) => ({
       const res = await axiosInstance.post("/room/join", {
         codeword,
       });
-      set({ roomId: res.data.room._id });
+
+      set(setRoomSettings(res.data.room));
       toast.success("The game is starting soon!");
     } catch (error) {
       if (error instanceof AxiosError) {
