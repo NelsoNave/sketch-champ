@@ -15,14 +15,14 @@ type FormData = {
 const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   closeJoinRoomModal,
 }) => {
-  const { joinRoom, roomJoinId } = useRoomStore();
+  const { joinRoom, roomId } = useRoomStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (roomJoinId) {
-      navigate(`/${roomJoinId}/room`);
+    if (roomId) {
+      navigate(`/${roomId}/room`);
     }
-  }, [roomJoinId]);
+  }, [roomId]);
 
   // validation
   const {
