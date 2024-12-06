@@ -2,17 +2,20 @@ import { useState } from "react";
 import LoginModal from "./LoginModal";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../store/useRoomStore";
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const { logout, authUser } = useAuthStore();
+  const { clearRoomId } = useRoomStore();
   const navigate = useNavigate();
 
   // logout
   const onLogoutClick = () => {
     logout();
+    clearRoomId();
     navigate("/");
   };
 

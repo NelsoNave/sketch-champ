@@ -28,6 +28,7 @@ interface RoomStore {
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
   accessRoom: () => void;
+  clearRoomId: () => void;
 }
 
 export const useRoomStore = create<RoomStore>((set) => ({
@@ -93,6 +94,10 @@ export const useRoomStore = create<RoomStore>((set) => ({
         toast.error("An unexpected error occurred");
       }
     }
+  },
+
+  clearRoomId: async () => {
+    set({ roomJoinId: "" });
   },
 
   // join
