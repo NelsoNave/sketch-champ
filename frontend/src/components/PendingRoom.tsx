@@ -1,13 +1,33 @@
+import { useEffect, useRef } from "react";
 import DrawingCanvas from "./DrawingCanvas";
 import Button from "./Button";
 import { useRoomStore } from "../store/useRoomStore";
-
+import { getSocket } from "../socket/socket.client";
 type Props = {};
 
 const Room = (props: Props) => {
-  const handleGetReady = () => {};
+  const handleGetReady = () => {
+    socket.emit("room:ready", roomId);
+  };
+  const { settings, pending, drawer, roomId } = useRoomStore();
+  const socket = getSocket();
+  const hasJoinId = useRef(false);
+  // join room if component is mounted
+  useEffect(() => {
+    if (!socket || !roomId) return;
+    if (hasJoinId.current) return;
+    socket.emit("room:join", roomId);
+    hasJoinId.current = true;
+    const handleBeforeUnload = () => {
+      socket.emit("room:leave", roomId);
+    };
 
-  const { settings, pending, drawer } = useRoomStore();
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [socket, roomId]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 mt-5">

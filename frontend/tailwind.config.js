@@ -17,6 +17,7 @@ export default {
       boxShadow: {
         custom: "5px 5px 0px 0px rgba(0, 0, 0, 1)",
         custom_light: "0px 4px 4px 0px rgba(0, 0, 0, 0.1)",
+        custom_green_light: "6px 6px 0px 0px rgba(9, 143, 117)",
       },
       borderWidth: {
         1.5: "1.5px",
