@@ -247,7 +247,13 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
   };
 
-  const handleAnswer = async (roomId: string, content: string) => {
+  const handleAnswer = async ({
+    roomId,
+    content,
+  }: {
+    roomId: string;
+    content: string;
+  }) => {
     const room = await Room.findById(roomId);
     if (!room) {
       socket.emit("error", { message: "Room not found" });
