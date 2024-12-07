@@ -102,14 +102,14 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
         await room.save();
       }
 
-      socket.leave(roomId);
-
+      console.log("room:member_left", socket.user?.username);
       // Notify other members
       io.to(roomId).emit("room:member_left", {
         userId: socket.user?._id,
         username: socket.user?.username,
         leftAt: new Date(),
       });
+      socket.leave(roomId);
     } catch (error) {
       console.error("Error in handleLeaveRoom", error);
       socket.emit("error", { message: "Failed to leave room" });
@@ -207,12 +207,126 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
       socket.to(data.roomId).emit("room:draw_sync", data);
 
       // Debug
-      console.log("room:draw_sync", data);
-      console.log("socket.rooms", socket.rooms);
+      //console.log("room:draw_sync", data);
+      //console.log("socket.rooms", socket.rooms);
     } catch (error) {
       console.error("Error in handleDraw", error);
       socket.emit("error", { message: "Failed to draw" });
     }
+  };
+
+  const handleAnswer = async (roomId: string, content: string) => {
+    const room = await Room.findById(roomId);
+    if (!room) {
+      socket.emit("error", { message: "Room not found" });
+      return;
+    }
+
+    // check if the game is active
+    if (room.status !== "active") {
+      socket.emit("error", { message: "Game is not active" });
+      return;
+    }
+
+    // current drawer can't answer
+    if (room.currentDrawer?.userId === socket.user?._id) {
+      socket.emit("error", { message: "Drawer can't answer" });
+      return;
+    }
+
+    // check if the answer is correct
+    const isCorrect = room.theme === content;
+
+    // if inCorrect, send message to room and return
+    if (!isCorrect) {
+      // Broadcast message to room
+      io.to(roomId).emit("room:message", {
+        username: socket.user?.username,
+        content: content,
+      });
+      return;
+    }
+
+    // if correct, processing score, and send message to room
+    const member = room.members.find(
+      (member) => member.userId === socket.user?._id
+    );
+    if (member) {
+      member.score++;
+    }
+    // set next drawer who is not the current / previous drawer
+    const previousDrawers = room.previousDrawers;
+    if (previousDrawers.length === room.members.length) {
+      room.previousDrawers = [];
+    }
+    const nextDrawer = room.members.find(
+      (member) =>
+        member.userId !== socket.user?._id &&
+        !previousDrawers.includes(member.userId)
+    );
+    if (nextDrawer) {
+      const timeLimit = room.settings.timeLimit * 1000;
+      setTimeout(() => {
+        handleTimeUp(roomId);
+      }, timeLimit);
+
+      room.currentDrawer = {
+        userId: nextDrawer.userId,
+        startedAt: new Date(),
+      };
+      room.previousDrawers.push(nextDrawer.userId);
+    }
+    // set new theme
+    room.theme = getRandomTheme();
+
+    // increment round
+    room.currentRound++;
+
+    // check if round is over
+    if (room.currentRound === room.settings.numberOfPrompts) {
+      room.status = "finished";
+    }
+    // update room
+    await room.save();
+
+    // Broadcast message to room
+    io.to(roomId).emit("room:message", {
+      username: socket.user?.username,
+      content: content,
+    });
+
+    // if round is over, notify all members
+    if (room.status === "finished") {
+      // show result (members score)
+      const memberResults = room.members.map((member) => ({
+        userId: member.userId,
+        username: member.username,
+        score: member.score,
+      }));
+      io.to(roomId).emit("room:finished", {
+        results: memberResults,
+      });
+    } else {
+      io.to(roomId).emit("room:correct", {
+        content: `${socket.user?.username} is correct!`,
+        answer: content,
+        answerBy: socket.user?.username,
+        nextDrawer: nextDrawer?.username,
+        currentRound: room.currentRound,
+        totalRounds: room.settings.numberOfPrompts,
+      });
+    }
+  };
+
+  const handleTimeUp = async (roomId: string) => {
+    const room = await Room.findById(roomId);
+    if (!room) {
+      return;
+    }
+    io.to(roomId).emit("room:time_up", {
+      content: "Time is up",
+      answer: room.theme,
+    });
   };
 
   // Register event handlers
@@ -220,11 +334,13 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
   socket.on("room:ready", handleReady);
   socket.on("room:leave", handleLeaveRoom);
   socket.on("room:draw", handleDraw);
+  socket.on("room:answer", handleAnswer);
 
   return {
     handleJoinRoom,
     handleLeaveRoom,
     handleReady,
     handleDraw,
+    handleAnswer,
   };
 };
