@@ -49,6 +49,7 @@ export const createRoomHandler = (socket: Socket) => {
     updateRoomMember,
     OpenGameStartModal,
     setGameSettings,
+    setRoomMessageData,
   } = useRoomStore();
 
   const { authUser } = useAuthStore();
@@ -100,7 +101,7 @@ export const createRoomHandler = (socket: Socket) => {
     // メッセージ(Answer)が送信された(正解ではない)時に通知
     console.log("Message:", data);
     toast.success(`${data.username}: ${data.content}`);
-    // Todo show message in chat
+    setRoomMessageData(data);
   };
 
   const handleFinished = (data: RoomFinishedData) => {
