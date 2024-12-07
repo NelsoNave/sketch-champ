@@ -31,7 +31,6 @@ export const createRoomHandler = (socket: Socket) => {
 
   const handleMemberJoined = (data: RoomMember) => {
     toast.success(`${data.username} joined the room`);
-    // Todo update room store
     updateRoomMember(data);
   };
 

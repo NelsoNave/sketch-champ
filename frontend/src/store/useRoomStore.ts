@@ -128,13 +128,20 @@ export const useRoomStore = create<RoomStore>((set) => ({
   },
 
   setRoomJoinData: (roomJoinData: RoomJoinedData) => {
-    console.log(roomJoinData);
-    set((state) => ({
-      roomJoinData: {
-        ...state.roomJoinData,
-        members: [...state.roomJoinData.members, ...roomJoinData.members],
-      },
-    }));
+    set((state) => {
+      const newMembers = roomJoinData.members.filter((newMember) => {
+        return !state.roomJoinData.members.some(
+          (existingMember) => existingMember.userId === newMember.userId
+        );
+      });
+
+      return {
+        roomJoinData: {
+          ...state.roomJoinData,
+          members: [...state.roomJoinData.members, ...newMembers],
+        },
+      };
+    });
   },
 
   updateRoomMember: (newMember: RoomMember) => {
