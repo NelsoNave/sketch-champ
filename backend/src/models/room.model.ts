@@ -6,8 +6,10 @@ export interface IRoom extends Document {
   hostId: mongoose.Types.ObjectId;
   members: {
     userId: mongoose.Types.ObjectId;
+    username: string;
     isReady: boolean;
     joinedAt: Date;
+    score: number;
   }[];
   settings: {
     maxPlayers: number;
@@ -20,6 +22,11 @@ export interface IRoom extends Document {
     userId: mongoose.Types.ObjectId;
     drawing: string;
   }[];
+  currentDrawer?: {
+    userId: mongoose.Types.ObjectId;
+    startedAt: Date;
+  };
+  previousDrawers: mongoose.Types.ObjectId[];
 }
 
 const RoomSchema = new mongoose.Schema(
@@ -38,8 +45,10 @@ const RoomSchema = new mongoose.Schema(
     members: [
       {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        username: { type: String, required: true },
         isReady: { type: Boolean, default: false },
         joinedAt: { type: Date, default: Date.now },
+        score: { type: Number, default: 0 },
       },
     ],
     settings: {
@@ -55,6 +64,11 @@ const RoomSchema = new mongoose.Schema(
         drawing: { type: String, required: true },
       },
     ],
+    currentDrawer: {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      startedAt: { type: Date, default: Date.now },
+    },
+    previousDrawers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
