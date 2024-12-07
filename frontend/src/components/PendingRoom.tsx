@@ -184,9 +184,9 @@ const Room = (props: Props) => {
               I'm ready to join!
             </Button>
           )
-        ) : (
-          <Button variant="pink">Start</Button>
-        )}
+        ) : drawer ? (
+          <Button variant="pink">Start Drawing</Button>
+        ) : null}
       </div>
       {isOpenGameStart && <GameStartModal onClose={handleCloseModal} />}
     </div>
