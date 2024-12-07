@@ -52,7 +52,7 @@ interface RoomStore {
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
   accessRoom: () => void;
-  clearRoomId: () => void;
+  leaveRoom: () => void;
   setRoomJoinData: (data: RoomJoinedData) => void;
   updateRoomMember: (data: RoomMember) => void;
   setIsReady: () => void;
@@ -77,7 +77,7 @@ const setRoomSettings = (prefix: any) => {
   };
 };
 
-export const useRoomStore = create<RoomStore>((set) => ({
+export const useRoomStore = create<RoomStore>((set, get) => ({
   codeword: "",
   maxPlayers: 2,
   numberOfPrompts: 2,
@@ -140,7 +140,9 @@ export const useRoomStore = create<RoomStore>((set) => ({
     }
   },
 
-  clearRoomId: async () => {
+  leaveRoom: () => {
+    const socket = getSocket();
+    socket.emit("room:leave", get().roomId);
     set({ roomId: "" });
   },
 
