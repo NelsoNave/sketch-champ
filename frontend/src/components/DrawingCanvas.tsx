@@ -64,6 +64,15 @@ const DrawingCanvas = () => {
     });
   };
 
+  const handleClearCanvas = () => {
+    setPaths([]);
+    socket.emit("room:clear", roomId);
+  };
+
+  const handleClearCanvasSync = () => {
+    setPaths([]);
+  };
+
   useEffect(() => {
     if (!socket) return;
 
@@ -76,8 +85,10 @@ const DrawingCanvas = () => {
     };
 
     socket.on("room:draw_sync", handleDrawSync);
+    socket.on("room:clear_canvas", handleClearCanvasSync);
     return () => {
       socket.off("room:draw_sync", handleDrawSync);
+      socket.off("room:clear_canvas", () => setPaths([]));
     };
   }, [socket]);
 
@@ -136,7 +147,7 @@ const DrawingCanvas = () => {
             onClick={() => setCurrentColor(color)}
           />
         ))}
-        <button onClick={() => setCurrentPath([])}>
+        <button onClick={handleClearCanvas}>
           <img src="/trash.png" alt="" className="w-7" />
         </button>
       </div>

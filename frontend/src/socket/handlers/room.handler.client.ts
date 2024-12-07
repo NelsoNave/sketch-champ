@@ -1,8 +1,8 @@
 import { Socket } from "socket.io-client";
 import toast from "react-hot-toast";
+import { Result } from "../../types/result.type";
 import { useRoomStore } from "../../store/useRoomStore";
 import { useAuthStore } from "../../store/useAuthStore";
-import { Result } from "../../types/result.type";
 
 interface RoomMember {
   userId: string;
@@ -44,15 +44,26 @@ interface RoomFinishedData {
 }
 
 export const createRoomHandler = (socket: Socket) => {
+  // Remove all event handlers
+  socket.off("room:member_joined");
+  socket.off("room:member_left");
+  socket.off("room:member_ready");
+  socket.off("room:joined");
+  socket.off("room:game_start");
+  socket.off("room:message");
+  socket.off("room:correct");
+  socket.off("room:finished");
+  socket.off("error");
+
   const {
     setRoomJoinData,
     updateRoomMember,
     OpenGameStartModal,
     setGameSettings,
     setRoomMessageData,
-  } = useRoomStore();
+  } = useRoomStore.getState();
 
-  const { authUser } = useAuthStore();
+  const { authUser } = useAuthStore.getState();
 
   const handleRoomJoined = (data: RoomJoinedData) => {
     // JoinしたユーザーにRoomの設定とメンバーを通知
