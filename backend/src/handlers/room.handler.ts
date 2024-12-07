@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { Room } from "../models/room.model";
+import { getRandomTheme } from "../utils/rondom.theme";
 
 export const createRoomHandler = (io: Server, socket: Socket) => {
   // Join room
@@ -18,6 +19,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
           $addToSet: {
             members: {
               userId: socket.user?._id,
+              username: socket.user?.username,
               isReady: false,
               joinedAt: new Date(),
             },
@@ -142,14 +144,24 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
         // Check if all members are ready
         const allReady = room.members.every((m) => m.isReady);
         if (allReady) {
-          console.log("room:game_start", roomId);
+          // update room and send game start event to all members
+          room.status = "active";
+
+          room.currentDrawer = {
+            userId: socket.user?._id,
+            startedAt: new Date(),
+          };
+          room.previousDrawers.push(socket.user?._id);
+          room.theme = getRandomTheme();
+          room.currentRound = 1;
+
           io.to(roomId).emit("room:game_start", {
-            roomId,
+            nextDrawer: member.username,
+            currentRound: room.currentRound,
+            totalRounds: room.settings.numberOfPrompts,
+            theme: room.theme,
             startTime: new Date(),
           });
-
-          // Update room status
-          room.status = "active";
           await room.save();
         }
       }
