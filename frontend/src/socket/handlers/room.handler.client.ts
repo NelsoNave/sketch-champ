@@ -1,5 +1,7 @@
 import { Socket } from "socket.io-client";
 import toast from "react-hot-toast";
+import { useRoomStore } from "../../store/useRoomStore";
+import { useAuthStore } from "../../store/useAuthStore";
 import { Result } from "../../types/result.type";
 
 interface RoomMember {
@@ -19,6 +21,8 @@ interface RoomJoinedData {
   roomId: string;
   members: RoomMember[];
   settings: RoomSettings;
+  theme: string;
+  nextDrawer: string;
 }
 
 interface RoomMessageData {
@@ -40,31 +44,41 @@ interface RoomFinishedData {
 }
 
 export const createRoomHandler = (socket: Socket) => {
+  const {
+    setRoomJoinData,
+    updateRoomMember,
+    OpenGameStartModal,
+    setGameSettings,
+    setRoomMessageData,
+  } = useRoomStore();
+
+  const { authUser } = useAuthStore();
+
   const handleRoomJoined = (data: RoomJoinedData) => {
     // JoinしたユーザーにRoomの設定とメンバーを通知
     console.log("Room joined:", data);
-    // Room storeの更新など
+    setRoomJoinData(data);
   };
 
   const handleMemberJoined = (data: RoomMember) => {
     // 他のユーザーがJoinした時に通知
     console.log("Member joined:", data);
     toast.success(`${data.username} joined the room`);
-    // Todo update room store
+    updateRoomMember(data);
   };
 
   const handleRoomReady = (data: RoomMember) => {
     // ユーザーがReadyした時に通知
     console.log("Room ready:", data);
-    toast.success(`${data.username} is ready`);
-    // Todo update room store
+    // toast.success(`${data.username} is ready`); todo: figure out why multiple toasts are displayed.
+    updateRoomMember(data);
   };
 
   const handleGameStart = (data: RoomJoinedData) => {
     // ゲームが開始(全員Readyした時)に通知
     console.log("Game start:", data);
-    toast.success("Game started");
-    // Todo update room store
+    setGameSettings(data, authUser?.username as string);
+    OpenGameStartModal();
   };
 
   const handleTimeUp = (data: RoomJoinedData) => {
@@ -87,7 +101,7 @@ export const createRoomHandler = (socket: Socket) => {
     // メッセージ(Answer)が送信された(正解ではない)時に通知
     console.log("Message:", data);
     toast.success(`${data.username}: ${data.content}`);
-    // Todo show message in chat
+    setRoomMessageData(data);
   };
 
   const handleFinished = (data: RoomFinishedData) => {

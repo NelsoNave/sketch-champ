@@ -19,9 +19,16 @@ const Header = () => {
     navigate("/");
   };
 
+  const onLogoClick = () => {
+    clearRoomId();
+    navigate("/");
+  };
+
   return (
     <div className="flex justify-between items-center py-5 px-2 md:px-8">
-      <div className="font-russo_one">Kawaii Logo</div>
+      <div className="font-russo_one cursor-pointer" onClick={onLogoClick}>
+        Kawaii Logo
+      </div>
       <nav>
         {authUser ? (
           <button onClick={onLogoutClick} className="text-md font-bold">

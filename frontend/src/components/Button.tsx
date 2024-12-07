@@ -20,7 +20,7 @@ export default function Button({
     green:
       "bg-custom-teal text-white hover:bg-custom-yellow focus:ring-blue-500",
     yellow: "bg-custom-yellow hover:bg-custom-teal focus:ring-gray-500",
-    pink: "bg-custom-pink hover:bg-amber-300 focus:ring-gray-500",
+    pink: "bg-custom-pink hover:bg-custom-blue focus:ring-gray-500",
     white: "bg-white hover:bg-amber-300 focus:ring-gray-500",
   };
 

@@ -1,17 +1,34 @@
-import { useEffect, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import DrawingCanvas from "./DrawingCanvas";
 import Button from "./Button";
 import { useRoomStore } from "../store/useRoomStore";
 import { getSocket } from "../socket/socket.client";
+import { createRoomHandler } from "../socket/handlers/room.handler.client";
+import GameStartModal from "./GameStartModal";
 type Props = {};
 
 const Room = (props: Props) => {
   const handleGetReady = () => {
     socket.emit("room:ready", roomId);
+    setIsReady();
   };
-  const { settings, pending, drawer, roomId } = useRoomStore();
+
+  const {
+    settings,
+    pending,
+    drawer,
+    roomId,
+    roomJoinData,
+    isReady,
+    isOpenGameStart,
+    roomMessageData,
+    setIsReady,
+    CloseGameStartModal,
+  } = useRoomStore();
+
   const socket = getSocket();
   const hasJoinId = useRef(false);
+  createRoomHandler(socket);
   // join room if component is mounted
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -21,13 +38,34 @@ const Room = (props: Props) => {
     const handleBeforeUnload = () => {
       socket.emit("room:leave", roomId);
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [socket, roomId]);
+
+  const [content, setContent] = useState<string>("");
+
+  const handleCloseModal = () => {
+    CloseGameStartModal();
+  };
+
+  const handleInputChange = (val: React.ChangeEvent<HTMLInputElement>) => {
+    setContent(val.target.value);
+  };
+
+  const handleSendMessage = (e: FormEvent) => {
+    e.preventDefault();
+    if (content.trim()) {
+      console.log("roomId", roomId, "content", content);
+      socket.emit("room:answer", {
+        roomId,
+        content,
+      });
+      setContent("");
+    }
+  };
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 mt-5">
@@ -45,7 +83,7 @@ const Room = (props: Props) => {
                     Theme
                   </p>
                   <p className="flex justify-center items-center rounded-lg border-2 border-black h-11 font-russo_one shadow-custom_light">
-                    Apple
+                    {roomJoinData.theme}
                   </p>
                 </div>
                 <div className="relative w-1/2">
@@ -67,7 +105,7 @@ const Room = (props: Props) => {
                     Drawer
                   </p>
                   <p className="flex justify-center items-center rounded-lg border-2 border-black h-11 font-russo_one shadow-custom_light">
-                    ONO BEN
+                    {roomJoinData.nextDrawer}
                   </p>
                 </div>
                 <div className="relative w-1/2">
@@ -105,7 +143,38 @@ const Room = (props: Props) => {
               <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-white text-center font-russo_one">
                 Player
               </div>
-              <div className=""></div>
+              <div>
+                <ul className="flex flex-col gap-3 mt-7">
+                  {roomJoinData.members.map((data, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center justify-center gap-6"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="border border-black rounded-full bg-white w-9">
+                          <img
+                            src="/bee.png"
+                            alt=""
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <p className="w-[100px] overflow-hidden font-mochiy_pop_one">
+                          {data.userId}
+                        </p>
+                      </div>
+                      {data.isReady ? (
+                        <p className="font-poppins font-semibold text-custom-midnight-blue">
+                          Ready
+                        </p>
+                      ) : (
+                        <p className="font-poppins font-semibold text-custom-dark-red">
+                          Not ready
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </>
         ) : (
@@ -113,16 +182,75 @@ const Room = (props: Props) => {
             <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-custom-yellow text-center font-russo_one">
               chat
             </div>
-            <ul className="h-full p-5">
-              <li>hello</li>
-              <li>hi</li>
-            </ul>
+            <div className="flex flex-col justify-between h-full">
+              <ul className="flex flex-col h-full py-6 px-5">
+                {roomMessageData.map((message, index) => {
+                  return (
+                    <li key={index} className="mt-3">
+                      <div className="flex gap-5 items-center">
+                        <div className="border border-black rounded-full bg-white w-11 h-11 mt-1">
+                          <img
+                            src="/bee.png"
+                            alt="icon"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <p className="text-xs text-gray-600">{message.username}</p>
+                          <p className="font-mochiy_pop_one font-bold">{message.content}</p>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              {!drawer ? (
+                <form
+                  action=""
+                  className="p-5 relative"
+                  onClick={handleSendMessage}
+                >
+                  <input
+                    type="text"
+                    className="border border-black rounded-md w-full p-3 text-sm pr-16"
+                    placeholder="Send your message"
+                    onChange={handleInputChange}
+                    value={content}
+                  />
+                  <button className="absolute w-9 right-6 top-1/2 transform -translate-y-1/2 p-2 bg-black text-white rounded-md">
+                    <img
+                      src="/send.png"
+                      alt="send message"
+                      className="w-full h-full"
+                    />
+                  </button>
+                </form>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
         )}
-        <Button variant="pink" onClick={handleGetReady}>
-          I'm ready to join!
-        </Button>
+
+        {pending ? (
+          isReady ? (
+            <Button
+              variant="pink"
+              onClick={handleGetReady}
+              className="bg-custom-right-blue"
+            >
+              Cancel
+            </Button>
+          ) : (
+            <Button variant="pink" onClick={handleGetReady}>
+              I'm ready to join!
+            </Button>
+          )
+        ) : drawer ? (
+          <Button variant="pink">Start Drawing</Button>
+        ) : null}
       </div>
+      {isOpenGameStart && <GameStartModal onClose={handleCloseModal} />}
     </div>
   );
 };
