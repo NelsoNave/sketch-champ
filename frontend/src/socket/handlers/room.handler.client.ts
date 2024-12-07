@@ -36,8 +36,8 @@ export const createRoomHandler = (socket: Socket) => {
 
   const handleRoomReady = (data: RoomMember) => {
     console.log("Room ready:", data);
-    toast.success(`${data.username} is ready`);
-    // Todo update room store
+    // toast.success(`${data.username} is ready`); todo: figure out why multiple toasts are displayed.
+    updateRoomMember(data);
   };
 
   const handleGameStart = (data: RoomJoinedData) => {
