@@ -38,6 +38,7 @@ interface RoomStore {
   roomId: string;
   roomJoinData: RoomJoinedData;
   isReady: boolean;
+  isOpenGameStart: boolean;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -46,6 +47,9 @@ interface RoomStore {
   setRoomJoinData: (data: RoomJoinedData) => void;
   updateRoomMember: (data: RoomMember) => void;
   setIsReady: () => void;
+  updatePending: () => void;
+  OpenGameStartModal: () => void;
+  CloseGameStartModal: () => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -81,6 +85,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
     settings: { maxPlayers: 2, numberOfPrompts: 2, timeLimit: 30 },
   },
   isReady: false,
+  isOpenGameStart: false,
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -180,5 +185,17 @@ export const useRoomStore = create<RoomStore>((set) => ({
     set((state) => ({
       isReady: !state.isReady,
     }));
+  },
+
+  updatePending: () => {
+    set({ pending: false });
+  },
+
+  OpenGameStartModal: () => {
+    set({ isOpenGameStart: true });
+  },
+
+  CloseGameStartModal: () => {
+    set({ isOpenGameStart: false });
   },
 }));

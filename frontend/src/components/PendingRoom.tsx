@@ -4,6 +4,7 @@ import Button from "./Button";
 import { useRoomStore } from "../store/useRoomStore";
 import { getSocket } from "../socket/socket.client";
 import { createRoomHandler } from "../socket/handlers/room.handler.client";
+import GameStartModal from "./GameStartModal";
 type Props = {};
 
 const Room = (props: Props) => {
@@ -19,7 +20,9 @@ const Room = (props: Props) => {
     roomId,
     roomJoinData,
     isReady,
+    isOpenGameStart,
     setIsReady,
+    CloseGameStartModal,
   } = useRoomStore();
 
   const socket = getSocket();
@@ -40,6 +43,10 @@ const Room = (props: Props) => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [socket, roomId]);
+
+  const handleCloseModal = () => {
+    CloseGameStartModal();
+  };
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 mt-5">
@@ -172,6 +179,7 @@ const Room = (props: Props) => {
           </Button>
         )}
       </div>
+      {isOpenGameStart && <GameStartModal onClose={handleCloseModal} />}
     </div>
   );
 };
