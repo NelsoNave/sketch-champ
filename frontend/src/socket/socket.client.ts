@@ -1,4 +1,5 @@
 import { io, Socket } from "socket.io-client";
+import { registerSocketHandlers } from "./handlers";
 
 const SOCKET_URL = "http://localhost:3000";
 let socket: Socket | null = null;
@@ -11,6 +12,10 @@ export const initializeSocket = (userId: string) => {
     withCredentials: true, // send cookie
     auth: { userId },
   });
+  const cleanup = registerSocketHandlers(socket);
+  return () => {
+    cleanup();
+  };
 };
 
 export const getSocket = () => {
