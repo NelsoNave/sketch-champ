@@ -9,8 +9,18 @@ type Props = {};
 const Room = (props: Props) => {
   const handleGetReady = () => {
     socket.emit("room:ready", roomId);
+    setIsReady();
   };
-  const { settings, pending, drawer, roomId, roomJoinData } = useRoomStore();
+
+  const {
+    settings,
+    pending,
+    drawer,
+    roomId,
+    roomJoinData,
+    isReady,
+    setIsReady,
+  } = useRoomStore();
 
   const socket = getSocket();
   const hasJoinId = useRef(false);
@@ -152,9 +162,15 @@ const Room = (props: Props) => {
             </ul>
           </div>
         )}
-        <Button variant="pink" onClick={handleGetReady}>
-          I'm ready to join!
-        </Button>
+        {isReady ? (
+          <Button variant="pink" onClick={handleGetReady} className="bg-custom-right-blue">
+            Cancel
+          </Button>
+        ) : (
+          <Button variant="pink" onClick={handleGetReady}>
+            I'm ready to join!
+          </Button>
+        )}
       </div>
     </div>
   );

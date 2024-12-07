@@ -37,6 +37,7 @@ interface RoomStore {
   drawer: boolean;
   roomId: string;
   roomJoinData: RoomJoinedData;
+  isReady: boolean;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -44,6 +45,7 @@ interface RoomStore {
   clearRoomId: () => void;
   setRoomJoinData: (data: RoomJoinedData) => void;
   updateRoomMember: (data: RoomMember) => void;
+  setIsReady: () => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -78,6 +80,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
     members: [],
     settings: { maxPlayers: 2, numberOfPrompts: 2, timeLimit: 30 },
   },
+  isReady: false,
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -171,5 +174,11 @@ export const useRoomStore = create<RoomStore>((set) => ({
         };
       }
     });
+  },
+
+  setIsReady: () => {
+    set((state) => ({
+      isReady: !state.isReady,
+    }));
   },
 }));
