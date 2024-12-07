@@ -105,7 +105,38 @@ const Room = (props: Props) => {
               <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-white text-center font-russo_one">
                 Player
               </div>
-              <div className=""></div>
+              <div className="">
+                <ul className="flex flex-col gap-3 mt-7">
+                  {roomJoinData.members.map((data, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center justify-center gap-6"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="border border-black rounded-full bg-white w-9">
+                          <img
+                            src="/bee.png"
+                            alt=""
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <p className="w-[100px] overflow-hidden font-mochiy_pop_one">
+                          {data.userId}
+                        </p>
+                      </div>
+                      {data.isReady ? (
+                        <p className="font-poppins font-semibold text-custom-midnight-blue">
+                          Ready
+                        </p>
+                      ) : (
+                        <p className="font-poppins font-semibold text-custom-dark-red">
+                          Not ready
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </>
         ) : (

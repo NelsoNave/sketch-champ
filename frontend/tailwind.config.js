@@ -13,6 +13,8 @@ export default {
         "custom-serenade": "#fff8eb",
         "custom-cape-cod": "#414749",
         "custom-bianca": "#FDFBF6",
+        "custom-dark-red": "#D32F2F",
+        "custom-midnight-blue": "#003366",
       },
       boxShadow: {
         custom: "5px 5px 0px 0px rgba(0, 0, 0, 1)",
