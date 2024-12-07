@@ -9,18 +9,18 @@ const Header = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const { logout, authUser } = useAuthStore();
-  const { clearRoomId } = useRoomStore();
+  const { leaveRoom } = useRoomStore();
   const navigate = useNavigate();
 
   // logout
   const onLogoutClick = () => {
     logout();
-    clearRoomId();
+    leaveRoom();
     navigate("/");
   };
 
   const onLogoClick = () => {
-    clearRoomId();
+    leaveRoom();
     navigate("/");
   };
 
