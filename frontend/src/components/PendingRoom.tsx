@@ -3,15 +3,18 @@ import DrawingCanvas from "./DrawingCanvas";
 import Button from "./Button";
 import { useRoomStore } from "../store/useRoomStore";
 import { getSocket } from "../socket/socket.client";
+import { createRoomHandler } from "../socket/handlers/room.handler.client";
 type Props = {};
 
 const Room = (props: Props) => {
   const handleGetReady = () => {
     socket.emit("room:ready", roomId);
   };
-  const { settings, pending, drawer, roomId } = useRoomStore();
+  const { settings, pending, drawer, roomId, roomJoinData } = useRoomStore();
+
   const socket = getSocket();
   const hasJoinId = useRef(false);
+  createRoomHandler(socket);
   // join room if component is mounted
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -21,7 +24,6 @@ const Room = (props: Props) => {
     const handleBeforeUnload = () => {
       socket.emit("room:leave", roomId);
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {

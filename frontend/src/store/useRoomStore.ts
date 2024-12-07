@@ -11,6 +11,19 @@ type RoomSettings = {
   timeLimit: number;
 };
 
+interface RoomMember {
+  userId: string;
+  username: string;
+  isReady: boolean;
+  joinedAt: Date;
+}
+
+interface RoomJoinedData {
+  roomId: string;
+  members: RoomMember[];
+  settings: RoomSettings;
+}
+
 interface RoomStore {
   codeword: string;
   maxPlayers: number;
@@ -23,11 +36,13 @@ interface RoomStore {
   pending: boolean;
   drawer: boolean;
   roomId: string;
+  roomJoinData: RoomJoinedData;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
   accessRoom: () => void;
   clearRoomId: () => void;
+  setRoomJoinData: (data: RoomJoinedData) => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -57,6 +72,11 @@ export const useRoomStore = create<RoomStore>((set) => ({
   pending: true,
   drawer: true,
   roomId: "",
+  roomJoinData: {
+    roomId: "",
+    members: [],
+    settings: { maxPlayers: 2, numberOfPrompts: 2, timeLimit: 30 },
+  },
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -69,7 +89,6 @@ export const useRoomStore = create<RoomStore>((set) => ({
       });
 
       set(setRoomSettings(res.data.room));
-
       toast.success("The game is starting soon!");
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -104,6 +123,16 @@ export const useRoomStore = create<RoomStore>((set) => ({
   // join
   accessRoom: () => {
     const socket = getSocket();
-    socket.emit("join-room?");
+    socket.emit("join-room");
+  },
+
+  setRoomJoinData: (roomJoinData: RoomJoinedData) => {
+    console.log(roomJoinData);
+    set((state) => ({
+      roomJoinData: {
+        ...state.roomJoinData,
+        members: [...state.roomJoinData.members, ...roomJoinData.members],
+      },
+    }));
   },
 }));

@@ -1,5 +1,6 @@
 import { Socket } from "socket.io-client";
 import toast from "react-hot-toast";
+import { useRoomStore } from "../../store/useRoomStore";
 
 interface RoomMember {
   userId: string;
@@ -21,9 +22,11 @@ interface RoomJoinedData {
 }
 
 export const createRoomHandler = (socket: Socket) => {
+  const { setRoomJoinData } = useRoomStore();
+
   const handleRoomJoined = (data: RoomJoinedData) => {
     console.log("Room joined:", data);
-    // Room storeの更新など
+    setRoomJoinData(data);
   };
 
   const handleMemberJoined = (data: RoomMember) => {
