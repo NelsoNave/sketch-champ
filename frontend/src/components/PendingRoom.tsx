@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import DrawingCanvas from "./DrawingCanvas";
 import Button from "./Button";
 import { useRoomStore } from "../store/useRoomStore";
@@ -44,8 +44,26 @@ const Room = (props: Props) => {
     };
   }, [socket, roomId]);
 
+  const [content, setContent] = useState<string>("");
+
   const handleCloseModal = () => {
     CloseGameStartModal();
+  };
+
+  const handleInputChange = (val: React.ChangeEvent<HTMLInputElement>) => {
+    setContent(val.target.value);
+  };
+
+  const handleSendMessage = (e: FormEvent) => {
+    e.preventDefault();
+    if (content.trim()) {
+      console.log("roomId", roomId, "content", content);
+      socket.emit("room:answer", {
+        roomId: "67549680154e92e9c9df72d2",
+        content,
+      });
+      setContent("");
+    }
   };
 
   return (
@@ -163,10 +181,37 @@ const Room = (props: Props) => {
             <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-custom-yellow text-center font-russo_one">
               chat
             </div>
-            <ul className="h-full p-5">
-              <li>hello</li>
-              <li>hi</li>
-            </ul>
+            <div className="flex flex-col justify-between h-full">
+              <ul className="flex flex-col h-full p-5">
+                <li>hello</li>
+                <li>hello</li>
+              </ul>
+
+              {!drawer ? (
+                <form
+                  action=""
+                  className="p-5 relative"
+                  onClick={handleSendMessage}
+                >
+                  <input
+                    type="text"
+                    className="border border-black rounded-md w-full p-3 text-sm pr-16"
+                    placeholder="Send your message"
+                    onChange={handleInputChange}
+                    value={content}
+                  />
+                  <button className="absolute w-9 right-6 top-1/2 transform -translate-y-1/2 p-2 bg-black text-white rounded-md">
+                    <img
+                      src="/send.png"
+                      alt="send message"
+                      className="w-full h-full"
+                    />
+                  </button>
+                </form>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
         )}
 
