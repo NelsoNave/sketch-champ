@@ -170,7 +170,11 @@ const Room = (props: Props) => {
           </div>
         )}
         {isReady ? (
-          <Button variant="pink" onClick={handleGetReady} className="bg-custom-right-blue">
+          <Button
+            variant="pink"
+            onClick={handleGetReady}
+            className="bg-custom-right-blue"
+          >
             Cancel
           </Button>
         ) : (
