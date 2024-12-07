@@ -22,7 +22,7 @@ interface RoomJoinedData {
 }
 
 export const createRoomHandler = (socket: Socket) => {
-  const { setRoomJoinData } = useRoomStore();
+  const { setRoomJoinData, updateRoomMember } = useRoomStore();
 
   const handleRoomJoined = (data: RoomJoinedData) => {
     console.log("Room joined:", data);
@@ -30,9 +30,9 @@ export const createRoomHandler = (socket: Socket) => {
   };
 
   const handleMemberJoined = (data: RoomMember) => {
-    console.log("Member joined:", data);
     toast.success(`${data.username} joined the room`);
     // Todo update room store
+    updateRoomMember(data);
   };
 
   const handleRoomReady = (data: RoomMember) => {

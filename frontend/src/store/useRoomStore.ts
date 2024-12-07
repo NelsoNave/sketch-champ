@@ -43,6 +43,7 @@ interface RoomStore {
   accessRoom: () => void;
   clearRoomId: () => void;
   setRoomJoinData: (data: RoomJoinedData) => void;
+  updateRoomMember: (data: RoomMember) => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -134,5 +135,34 @@ export const useRoomStore = create<RoomStore>((set) => ({
         members: [...state.roomJoinData.members, ...roomJoinData.members],
       },
     }));
+  },
+
+  updateRoomMember: (newMember: RoomMember) => {
+    set((state) => {
+      const existingMemberIndex = state.roomJoinData.members.findIndex(
+        (member) => member.userId === newMember.userId
+      );
+
+      // player already exist
+      if (existingMemberIndex !== -1) {
+        const updatedMembers = state.roomJoinData.members.map((member) =>
+          member.userId === newMember.userId ? newMember : member
+        );
+
+        return {
+          roomJoinData: {
+            ...state.roomJoinData,
+            members: updatedMembers,
+          },
+        };
+      } else {
+        return {
+          roomJoinData: {
+            ...state.roomJoinData,
+            members: [...state.roomJoinData.members, newMember],
+          },
+        };
+      }
+    });
   },
 }));
