@@ -21,6 +21,7 @@ const Room = (props: Props) => {
     roomJoinData,
     isReady,
     isOpenGameStart,
+    roomMessageData,
     setIsReady,
     CloseGameStartModal,
   } = useRoomStore();
@@ -59,7 +60,7 @@ const Room = (props: Props) => {
     if (content.trim()) {
       console.log("roomId", roomId, "content", content);
       socket.emit("room:answer", {
-        roomId: "67549680154e92e9c9df72d2",
+        roomId,
         content,
       });
       setContent("");
@@ -182,11 +183,27 @@ const Room = (props: Props) => {
               chat
             </div>
             <div className="flex flex-col justify-between h-full">
-              <ul className="flex flex-col h-full p-5">
-                <li>hello</li>
-                <li>hello</li>
+              <ul className="flex flex-col h-full py-6 px-5">
+                {roomMessageData.map((message, index) => {
+                  return (
+                    <li key={index} className="mt-3">
+                      <div className="flex gap-5 items-center">
+                        <div className="border border-black rounded-full bg-white w-11 h-11 mt-1">
+                          <img
+                            src="/bee.png"
+                            alt="icon"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <p className="text-xs text-gray-600">{message.username}</p>
+                          <p className="font-mochiy_pop_one font-bold">{message.content}</p>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
-
               {!drawer ? (
                 <form
                   action=""

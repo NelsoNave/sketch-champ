@@ -26,6 +26,11 @@ interface RoomJoinedData {
   nextDrawer: string;
 }
 
+interface RoomMessageData {
+  username: string;
+  content: string;
+}
+
 interface RoomStore {
   codeword: string;
   maxPlayers: number;
@@ -42,6 +47,7 @@ interface RoomStore {
   isOpenGameStart: boolean;
   currentRound: number;
   nextDrawer: string;
+  roomMessageData: RoomMessageData[];
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -53,7 +59,8 @@ interface RoomStore {
   updatePending: () => void;
   OpenGameStartModal: () => void;
   CloseGameStartModal: () => void;
-  setGameSettings: (data: RoomJoinedData, username: string) => void; // authUser を引数として追加
+  setGameSettings: (data: RoomJoinedData, username: string) => void;
+  setRoomMessageData: (data: RoomMessageData) => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -93,6 +100,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
   isOpenGameStart: false,
   currentRound: 0,
   nextDrawer: "",
+  roomMessageData: [{ username: "Risa", content: "test message" }],
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -220,5 +228,11 @@ export const useRoomStore = create<RoomStore>((set) => ({
     } else {
       set({ drawer: false });
     }
+  },
+
+  setRoomMessageData: (data: RoomMessageData) => {
+    set((state) => ({
+      roomMessageData: [...state.roomMessageData, data],
+    }));
   },
 }));
