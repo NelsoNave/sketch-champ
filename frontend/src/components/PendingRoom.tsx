@@ -169,18 +169,23 @@ const Room = (props: Props) => {
             </ul>
           </div>
         )}
-        {isReady ? (
-          <Button
-            variant="pink"
-            onClick={handleGetReady}
-            className="bg-custom-right-blue"
-          >
-            Cancel
-          </Button>
+
+        {pending ? (
+          isReady ? (
+            <Button
+              variant="pink"
+              onClick={handleGetReady}
+              className="bg-custom-right-blue"
+            >
+              Cancel
+            </Button>
+          ) : (
+            <Button variant="pink" onClick={handleGetReady}>
+              I'm ready to join!
+            </Button>
+          )
         ) : (
-          <Button variant="pink" onClick={handleGetReady}>
-            I'm ready to join!
-          </Button>
+          <Button variant="pink">Start</Button>
         )}
       </div>
       {isOpenGameStart && <GameStartModal onClose={handleCloseModal} />}
