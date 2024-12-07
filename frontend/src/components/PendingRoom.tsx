@@ -64,7 +64,7 @@ const Room = (props: Props) => {
                     Theme
                   </p>
                   <p className="flex justify-center items-center rounded-lg border-2 border-black h-11 font-russo_one shadow-custom_light">
-                    Apple
+                    {roomJoinData.theme}
                   </p>
                 </div>
                 <div className="relative w-1/2">
@@ -86,7 +86,7 @@ const Room = (props: Props) => {
                     Drawer
                   </p>
                   <p className="flex justify-center items-center rounded-lg border-2 border-black h-11 font-russo_one shadow-custom_light">
-                    ONO BEN
+                    {roomJoinData.nextDrawer}
                   </p>
                 </div>
                 <div className="relative w-1/2">
@@ -124,7 +124,7 @@ const Room = (props: Props) => {
               <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-white text-center font-russo_one">
                 Player
               </div>
-              <div className="">
+              <div>
                 <ul className="flex flex-col gap-3 mt-7">
                   {roomJoinData.members.map((data, index) => (
                     <li

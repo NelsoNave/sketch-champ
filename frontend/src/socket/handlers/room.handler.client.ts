@@ -1,6 +1,7 @@
 import { Socket } from "socket.io-client";
 import toast from "react-hot-toast";
 import { useRoomStore } from "../../store/useRoomStore";
+import { useAuthStore } from "../../store/useAuthStore";
 
 interface RoomMember {
   userId: string;
@@ -19,11 +20,19 @@ interface RoomJoinedData {
   roomId: string;
   members: RoomMember[];
   settings: RoomSettings;
+  theme: string;
+  nextDrawer: string;
 }
 
 export const createRoomHandler = (socket: Socket) => {
-  const { setRoomJoinData, updateRoomMember, OpenGameStartModal } =
-    useRoomStore();
+  const {
+    setRoomJoinData,
+    updateRoomMember,
+    OpenGameStartModal,
+    setGameSettings,
+  } = useRoomStore();
+
+  const { authUser } = useAuthStore();
 
   const handleRoomJoined = (data: RoomJoinedData) => {
     console.log("Room joined:", data);
@@ -43,6 +52,7 @@ export const createRoomHandler = (socket: Socket) => {
 
   const handleGameStart = (data: RoomJoinedData) => {
     console.log("Game start:", data);
+    setGameSettings(data, authUser?.username as string);
     OpenGameStartModal();
   };
 

@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { AxiosError } from "axios";
 import { axiosInstance } from "../lib/axios";
-import { Room } from "../types/room.type";
 import { getSocket } from "../socket/socket.client";
 import toast from "react-hot-toast";
+import { Room } from "../types/room.type";
 
 type RoomSettings = {
   maxPlayers: number;
@@ -22,6 +22,8 @@ interface RoomJoinedData {
   roomId: string;
   members: RoomMember[];
   settings: RoomSettings;
+  theme: string;
+  nextDrawer: string;
 }
 
 interface RoomStore {
@@ -31,7 +33,6 @@ interface RoomStore {
   timeLimit: number;
   status: string;
   settings: RoomSettings;
-  theme: string;
   hostId: number;
   pending: boolean;
   drawer: boolean;
@@ -39,6 +40,8 @@ interface RoomStore {
   roomJoinData: RoomJoinedData;
   isReady: boolean;
   isOpenGameStart: boolean;
+  currentRound: number;
+  nextDrawer: string;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -50,6 +53,7 @@ interface RoomStore {
   updatePending: () => void;
   OpenGameStartModal: () => void;
   CloseGameStartModal: () => void;
+  setGameSettings: (data: RoomJoinedData, username: string) => void; // authUser を引数として追加
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -62,7 +66,6 @@ const setRoomSettings = (prefix: any) => {
       numberOfPrompts: prefix.settings.numberOfPrompts,
       timeLimit: prefix.settings.timeLimit,
     },
-    theme: prefix.theme,
     roomId: prefix._id,
   };
 };
@@ -74,7 +77,7 @@ export const useRoomStore = create<RoomStore>((set) => ({
   timeLimit: 30,
   status: "",
   settings: { maxPlayers: 2, numberOfPrompts: 2, timeLimit: 30 },
-  theme: "",
+
   hostId: 0,
   pending: true,
   drawer: true,
@@ -83,9 +86,13 @@ export const useRoomStore = create<RoomStore>((set) => ({
     roomId: "",
     members: [],
     settings: { maxPlayers: 2, numberOfPrompts: 2, timeLimit: 30 },
+    theme: "",
+    nextDrawer: "",
   },
   isReady: false,
   isOpenGameStart: false,
+  currentRound: 0,
+  nextDrawer: "",
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -197,5 +204,21 @@ export const useRoomStore = create<RoomStore>((set) => ({
 
   CloseGameStartModal: () => {
     set({ isOpenGameStart: false });
+  },
+
+  setGameSettings: (data: RoomJoinedData, authUser: string) => {
+    set((state) => ({
+      roomJoinData: {
+        ...state.roomJoinData,
+        theme: data.theme,
+        nextDrawer: data.nextDrawer,
+      },
+    }));
+
+    if (authUser === data.nextDrawer) {
+      set({ drawer: true });
+    } else {
+      set({ drawer: false });
+    }
   },
 }));
