@@ -5,9 +5,8 @@ import { useRoomStore } from "../store/useRoomStore";
 import { getSocket } from "../socket/socket.client";
 import { createRoomHandler } from "../socket/handlers/room.handler.client";
 import GameStartModal from "./GameStartModal";
-type Props = {};
 
-const Room = (props: Props) => {
+const Room = () => {
   const handleGetReady = () => {
     socket.emit("room:ready", roomId);
     setIsReady();
@@ -159,7 +158,7 @@ const Room = (props: Props) => {
                           />
                         </div>
                         <p className="w-[100px] overflow-hidden font-mochiy_pop_one">
-                          {data.userId}
+                          {data.username}
                         </p>
                       </div>
                       {data.isReady ? (
@@ -196,8 +195,12 @@ const Room = (props: Props) => {
                           />
                         </div>
                         <div className="flex flex-col justify-center">
-                          <p className="text-xs text-gray-600">{message.username}</p>
-                          <p className="font-mochiy_pop_one font-bold">{message.content}</p>
+                          <p className="text-xs text-gray-600">
+                            {message.username}
+                          </p>
+                          <p className="font-mochiy_pop_one font-bold">
+                            {message.content}
+                          </p>
                         </div>
                       </div>
                     </li>

@@ -215,7 +215,45 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
   };
 
-  const handleAnswer = async (roomId: string, content: string) => {
+  const handleClearDraw = async (roomId: string) => {
+    try {
+      const room = await Room.findById(roomId);
+      if (!room) {
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+      if (room.status !== "active" && room.status !== "pending") {
+        socket.emit("error", { message: "Room is not active" });
+        return;
+      }
+      // check if user is in the room
+      const member = room.members.find((m) =>
+        m.userId.equals(socket.user?._id)
+      );
+      if (!member) {
+        socket.emit("error", { message: "You are not in this room" });
+        return;
+      }
+      // check if joined in socket
+      if (!socket.rooms.has(roomId)) {
+        console.log("somehow not joined in socket", roomId);
+        socket.join(roomId);
+      }
+      // broadcast clear draw event to all members in the room except the sender
+      socket.to(roomId).emit("room:clear_canvas");
+    } catch (error) {
+      console.error("Error in handleClearDraw", error);
+      socket.emit("error", { message: "Failed to clear draw" });
+    }
+  };
+
+  const handleAnswer = async ({
+    roomId,
+    content,
+  }: {
+    roomId: string;
+    content: string;
+  }) => {
     const room = await Room.findById(roomId);
     if (!room) {
       socket.emit("error", { message: "Room not found" });
@@ -335,6 +373,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
   socket.on("room:leave", handleLeaveRoom);
   socket.on("room:draw", handleDraw);
   socket.on("room:answer", handleAnswer);
+  socket.on("room:clear", handleClearDraw);
 
   return {
     handleJoinRoom,
@@ -342,5 +381,6 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     handleReady,
     handleDraw,
     handleAnswer,
+    handleClearDraw,
   };
 };

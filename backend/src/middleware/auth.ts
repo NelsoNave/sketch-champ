@@ -15,7 +15,7 @@ export const auth: RequestHandler = async (
     // Get token from header
     const token = req.cookies.token;
     if (!token) {
-      res.status(401).json({ message: "Authorization token required" });
+      res.status(401).json({ message: "Unauthorized please login" });
       return;
     }
 
