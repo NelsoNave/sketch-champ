@@ -3,13 +3,13 @@ import { useRoomStore } from "../store/useRoomStore";
 
 const GameOverModal = ({ onClose }: { onClose: () => void }) => {
   const [count, setCount] = useState(3);
-  const { roomCorrectAnswerData } = useRoomStore();
+  const { roomCorrectAnswerData, clearRoomMessageData } = useRoomStore();
 
   useEffect(() => {
     console.log(count);
     if (count === 0) {
       // todo : clean canvas
-      // todo : initialize chats
+      clearRoomMessageData();
       onClose();
     } else {
       const intervalId = setInterval(() => {

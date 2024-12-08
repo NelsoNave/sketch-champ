@@ -75,6 +75,7 @@ interface RoomStore {
   setGameSettings: (data: RoomJoinedData, username: string) => void;
   setRoomMessageData: (data: RoomMessageData) => void;
   setRoomCorrectAnswerData: (data: RoomCorrectAnswerData) => void;
+  clearRoomMessageData: () => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -265,6 +266,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   setRoomMessageData: (data: RoomMessageData) => {
     set((state) => ({
       roomMessageData: [...state.roomMessageData, data],
+    }));
+  },
+
+  clearRoomMessageData: () => {
+    set(() => ({
+      roomMessageData: [],
     }));
   },
 
