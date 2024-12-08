@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import { Result } from "../../types/result.type";
 import { useRoomStore } from "../../store/useRoomStore";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useResultStore } from "../../store/useResultStore";
+import { useNavigate } from "react-router-dom";
 
 interface RoomMember {
   userId: string;
@@ -57,6 +59,7 @@ export const createRoomHandler = (socket: Socket) => {
   socket.off("error");
 
   const {
+    roomId,
     setRoomJoinData,
     updateRoomMember,
     OpenGameStartModal,
@@ -66,7 +69,10 @@ export const createRoomHandler = (socket: Socket) => {
     setRoomCorrectAnswerData,
   } = useRoomStore.getState();
 
+  const { setResult } = useResultStore();
   const { authUser } = useAuthStore.getState();
+
+  const navigate = useNavigate();
 
   const handleRoomJoined = (data: RoomJoinedData) => {
     // JoinしたユーザーにRoomの設定とメンバーを通知
@@ -117,10 +123,10 @@ export const createRoomHandler = (socket: Socket) => {
   };
 
   const handleFinished = (data: RoomFinishedData) => {
-    // ゲームが終了した時に通知
-    console.log("Finished:", data);
+    console.log("Finished:", data.results);
     toast.success("Game finished");
-    // Todo update result store
+    setResult(data.results);
+    navigate(`/${roomId}/result`);
   };
 
   const handleMemberLeft = (data: RoomJoinedData) => {

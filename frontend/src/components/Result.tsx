@@ -1,9 +1,18 @@
 import { useResultStore } from "../store/useResultStore";
+import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../store/useRoomStore";
 import Button from "./Button";
 
 const Result = () => {
   const { results } = useResultStore();
-  const handleLeaveRoom = () => {};
+  const navigate = useNavigate();
+  const { leaveRoom } = useRoomStore();
+
+  const handleLeaveRoom = () => {
+    leaveRoom();
+    navigate("/");
+  };
+
   const handleRematch = () => {};
 
   return (
@@ -20,7 +29,7 @@ const Result = () => {
                 key={index}
                 className="flex font-poppins font-semibold text-lg justify-around items-center italic"
               >
-                <p>1</p>
+                <p>{index + 1}</p>
                 <p>{result.username}</p>
                 <p>{result.score}</p>
               </li>
