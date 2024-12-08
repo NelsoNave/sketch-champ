@@ -103,9 +103,10 @@ export const createRoomHandler = (socket: Socket) => {
   const handleCorrectAnswer = (data: RoomCorrectAnswerData) => {
     // 正解した時に通知
     console.log("Answer correct:", data);
-    toast.success(`Answer by ${data.answerBy}: ${data.content}`);
-    // Todo show message in room
-    // Todo update room store
+    setRoomCorrectAnswerData(data, authUser?.username as string);
+    OpenGameOverModal();
+    // clear canvas
+    socket.emit("room:clear", roomId);
   };
 
   const handleMessage = (data: RoomMessageData) => {
