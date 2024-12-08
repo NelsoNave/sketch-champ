@@ -108,6 +108,8 @@ export const createRoomHandler = (socket: Socket) => {
     console.log("Answer correct:", data);
     setRoomCorrectAnswerData(data, authUser?.username as string);
     OpenGameOverModal();
+    // clear canvas
+    socket.emit("room:clear", roomId);
     // Todo update room store
     socket.emit("room:ready", roomId);
   };
