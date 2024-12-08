@@ -320,14 +320,12 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
     // set new theme
     room.theme = getRandomTheme();
-
-    // increment round
-    room.currentRound++;
-
     // check if round is over
     if (room.currentRound === room.settings.numberOfPrompts) {
       room.status = "finished";
     }
+    // increment round
+    room.currentRound++;
     // update room
     await room.save();
 
