@@ -125,7 +125,6 @@ export const createRoomHandler = (socket: Socket) => {
   const handleFinished = (data: RoomFinishedData) => {
     console.log("Finished:", data.results);
     toast.success("Game finished");
-    // Todo update result store
     setResult(data.results);
     navigate(`/${roomId}/result`);
   };

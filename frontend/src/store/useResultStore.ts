@@ -8,9 +8,8 @@ interface ResultStore {
 
 export const useResultStore = create<ResultStore>((set) => ({
   results: [],
-  setResult: (result) => {
-    set(() => ({
-      results: result,
-    }));
-  },
+  setResult: (result) =>
+    set({
+      results: result.sort((a, b) => b.score - a.score),
+    }),
 }));
