@@ -104,7 +104,7 @@ export const createRoomHandler = (socket: Socket) => {
 
   const handleCorrectAnswer = (data: RoomCorrectAnswerData) => {
     console.log("Answer correct:", data);
-    setRoomCorrectAnswerData(data);
+    setRoomCorrectAnswerData(data, authUser?.username as string);
     OpenGameOverModal();
     // Todo update room store
   };

@@ -74,7 +74,10 @@ interface RoomStore {
   CloseGameOverModal: () => void;
   setGameSettings: (data: RoomJoinedData, username: string) => void;
   setRoomMessageData: (data: RoomMessageData) => void;
-  setRoomCorrectAnswerData: (data: RoomCorrectAnswerData) => void;
+  setRoomCorrectAnswerData: (
+    data: RoomCorrectAnswerData,
+    username: string
+  ) => void;
   clearRoomMessageData: () => void;
 }
 
@@ -115,7 +118,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   isOpenGameOver: false,
   currentRound: 0,
   nextDrawer: "",
-  roomMessageData: [{ username: "Risa", content: "test message" }],
+  roomMessageData: [],
   roomCorrectAnswerData: {
     content: "",
     answer: "",
@@ -275,9 +278,29 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     }));
   },
 
-  setRoomCorrectAnswerData: (data: RoomCorrectAnswerData) => {
-    set((state) => ({
-      roomCorrectAnswerData: { ...state.roomCorrectAnswerData, ...data },
-    }));
+  setRoomCorrectAnswerData: (data: RoomCorrectAnswerData, username: string) => {
+    set((state) => {
+      const updatedRoomCorrectAnswerData = {
+        ...state.roomCorrectAnswerData,
+        ...data,
+      };
+
+      const updatedRoomJoinData = {
+        ...state.roomJoinData,
+        theme: `New Theme`,
+        nextDrawer: data.nextDrawer,
+      };
+
+      if (username === data.nextDrawer) {
+        set({ drawer: true });
+      } else {
+        set({ drawer: false });
+      }
+
+      return {
+        roomCorrectAnswerData: updatedRoomCorrectAnswerData,
+        roomJoinData: updatedRoomJoinData,
+      };
+    });
   },
 }));
