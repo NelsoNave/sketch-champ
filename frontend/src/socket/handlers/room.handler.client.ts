@@ -4,8 +4,7 @@ import { Result } from "../../types/result.type";
 import { useRoomStore } from "../../store/useRoomStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useResultStore } from "../../store/useResultStore";
-import { useNavigate } from "react-router-dom";
-
+import { NavigateFunction } from "react-router-dom";
 interface RoomMember {
   userId: string;
   username: string;
@@ -46,7 +45,10 @@ interface RoomFinishedData {
   results: Result[];
 }
 
-export const createRoomHandler = (socket: Socket) => {
+export const createRoomHandler = (
+  socket: Socket,
+  navigate: NavigateFunction
+) => {
   // Remove all event handlers
   socket.off("room:member_joined");
   socket.off("room:member_left");
@@ -56,6 +58,7 @@ export const createRoomHandler = (socket: Socket) => {
   socket.off("room:message");
   socket.off("room:correct");
   socket.off("room:finished");
+  socket.off("room:rematch");
   socket.off("error");
 
   const {
@@ -67,12 +70,11 @@ export const createRoomHandler = (socket: Socket) => {
     setGameSettings,
     setRoomMessageData,
     setRoomCorrectAnswerData,
+    setRematch,
   } = useRoomStore.getState();
 
-  const { setResult } = useResultStore();
+  const { setResult } = useResultStore.getState();
   const { authUser } = useAuthStore.getState();
-
-  const navigate = useNavigate();
 
   const handleRoomJoined = (data: RoomJoinedData) => {
     // JoinしたユーザーにRoomの設定とメンバーを通知
@@ -135,6 +137,10 @@ export const createRoomHandler = (socket: Socket) => {
     // Todo update room store
   };
 
+  const handleRematch = (data: RoomJoinedData) => {
+    setRematch(data.members);
+  };
+
   const handleError = (error: Error) => {
     console.error("Socket error:", error);
   };
@@ -149,6 +155,7 @@ export const createRoomHandler = (socket: Socket) => {
   socket.on("room:correct", handleCorrectAnswer);
   socket.on("room:message", handleMessage);
   socket.on("room:finished", handleFinished);
+  socket.on("room:rematch", handleRematch);
   socket.on("error", handleError);
 
   // Return cleanup function
@@ -161,6 +168,7 @@ export const createRoomHandler = (socket: Socket) => {
     socket.off("room:message", handleMessage);
     socket.off("room:correct", handleCorrectAnswer);
     socket.off("room:finished", handleFinished);
+    socket.off("room:rematch", handleRematch);
     socket.off("error", handleError);
   };
 };
