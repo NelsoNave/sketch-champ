@@ -80,7 +80,6 @@ interface RoomStore {
     username: string
   ) => void;
   clearRoomMessageData: () => void;
-  setIsReadyForNextGame: () => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -231,10 +230,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set((state) => ({
       isReady: !state.isReady,
     }));
-  },
-
-  setIsReadyForNextGame: () => {
-    set({ isReady: true });
   },
 
   updatePending: () => {
