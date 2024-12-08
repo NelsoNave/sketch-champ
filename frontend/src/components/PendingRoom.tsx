@@ -15,6 +15,8 @@ const Room = () => {
     setIsReady();
   };
 
+  const [isMobile, setIsMobile] = useState(false);
+
   const {
     settings,
     pending,
@@ -33,7 +35,8 @@ const Room = () => {
   const socket = getSocket();
   const hasJoinId = useRef(false);
   createRoomHandler(socket, navigate);
-  // join room if component is mounted
+
+  // Join room if component is mounted
   useEffect(() => {
     if (!socket || !roomId) return;
     if (hasJoinId.current) return;
@@ -48,6 +51,20 @@ const Room = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [socket, roomId]);
+
+  // Check screen size
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const [content, setContent] = useState<string>("");
 
@@ -186,14 +203,14 @@ const Room = () => {
             </div>
           </>
         ) : (
-          <div className="relative h-full border-2 border-black rounded-xl bg-custom-bianca">
-            <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-custom-yellow text-center font-russo_one">
-              chat
-            </div>
-            <div className="flex flex-col justify-between h-full">
-              <ul className="flex flex-col h-full py-6 px-5">
-                {roomMessageData.map((message, index) => {
-                  return (
+          !isMobile && (
+            <div className="relative h-full border-2 border-black rounded-xl bg-custom-bianca">
+              <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-custom-yellow text-center font-russo_one">
+                chat
+              </div>
+              <div className="flex flex-col justify-between h-full">
+                <ul className="flex flex-col h-full py-6 px-5">
+                  {roomMessageData.map((message, index) => (
                     <li key={index} className="mt-3">
                       <div className="flex gap-5 items-center">
                         <div className="border border-black rounded-full bg-white w-11 h-11 mt-1">
@@ -213,35 +230,33 @@ const Room = () => {
                         </div>
                       </div>
                     </li>
-                  );
-                })}
-              </ul>
-              {!drawer ? (
-                <form
-                  action=""
-                  className="p-5 relative"
-                  onClick={handleSendMessage}
-                >
-                  <input
-                    type="text"
-                    className="border border-black rounded-md w-full p-3 text-sm pr-16"
-                    placeholder="Send your message"
-                    onChange={handleInputChange}
-                    value={content}
-                  />
-                  <button className="absolute w-9 right-6 top-1/2 transform -translate-y-1/2 p-2 bg-black text-white rounded-md">
-                    <img
-                      src="/send.png"
-                      alt="send message"
-                      className="w-full h-full"
+                  ))}
+                </ul>
+                {!drawer && (
+                  <form
+                    action=""
+                    className="p-5 relative"
+                    onClick={handleSendMessage}
+                  >
+                    <input
+                      type="text"
+                      className="border border-black rounded-md w-full p-3 text-sm pr-16"
+                      placeholder="Send your message"
+                      onChange={handleInputChange}
+                      value={content}
                     />
-                  </button>
-                </form>
-              ) : (
-                ""
-              )}
+                    <button className="absolute w-9 right-6 top-1/2 transform -translate-y-1/2 p-2 bg-black text-white rounded-md">
+                      <img
+                        src="/send.png"
+                        alt="send message"
+                        className="w-full h-full"
+                      />
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
-          </div>
+          )
         )}
 
         {pending ? (
