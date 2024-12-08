@@ -12,7 +12,7 @@ interface Path {
 }
 const DrawingCanvas = () => {
   const socket = getSocket();
-  const { roomId } = useRoomStore();
+  const { roomId, drawer } = useRoomStore();
   const svgRef = useRef<SVGSVGElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPath, setCurrentPath] = useState<Point[]>([]);
@@ -40,19 +40,23 @@ const DrawingCanvas = () => {
   };
 
   const startDrawing = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!drawer) return;
+
     const point = getCoordinates(e);
     setIsDrawing(true);
     setCurrentPath([point]);
   };
 
   const draw = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!isDrawing) return;
+    if (!isDrawing || !drawer) return;
 
     const point = getCoordinates(e);
     setCurrentPath((prev) => [...prev, point]);
   };
 
   const stopDrawing = () => {
+    if (!drawer) return;
+
     setIsDrawing(false);
     setPaths((prev) => [...prev, { points: currentPath, color: currentColor }]);
 
@@ -65,6 +69,7 @@ const DrawingCanvas = () => {
   };
 
   const handleClearCanvas = () => {
+    if (!drawer) return;
     setPaths([]);
     socket.emit("room:clear", roomId);
   };
@@ -138,19 +143,23 @@ const DrawingCanvas = () => {
           />
         )}
       </svg>
-      <div className="tools flex rounded-md p-3 gap-3">
-        {colors.map((color) => (
-          <button
-            key={color}
-            className="w-8 h-8 rounded-full"
-            style={{ backgroundColor: color }}
-            onClick={() => setCurrentColor(color)}
-          />
-        ))}
-        <button onClick={handleClearCanvas}>
-          <img src="/trash.png" alt="" className="w-7" />
-        </button>
-      </div>
+      {drawer ? (
+        <div className="tools flex rounded-md p-3 gap-3">
+          {colors.map((color) => (
+            <button
+              key={color}
+              className="w-8 h-8 rounded-full"
+              style={{ backgroundColor: color }}
+              onClick={() => setCurrentColor(color)}
+            />
+          ))}
+          <button onClick={handleClearCanvas}>
+            <img src="/trash.png" alt="" className="w-7" />
+          </button>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };
