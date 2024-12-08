@@ -31,6 +31,16 @@ interface RoomMessageData {
   content: string;
 }
 
+interface RoomCorrectAnswerData {
+  content: string;
+  answer: string;
+  answerBy: string;
+  nextTheme: string;
+  nextDrawer: string;
+  currentRound: number;
+  totalRounds: number;
+}
+
 interface RoomStore {
   codeword: string;
   maxPlayers: number;
@@ -48,6 +58,8 @@ interface RoomStore {
   currentRound: number;
   nextDrawer: string;
   roomMessageData: RoomMessageData[];
+  roomCorrectAnswerData: RoomCorrectAnswerData;
+  isOpenGameOver: boolean;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -59,8 +71,15 @@ interface RoomStore {
   updatePending: () => void;
   OpenGameStartModal: () => void;
   CloseGameStartModal: () => void;
+  OpenGameOverModal: () => void;
+  CloseGameOverModal: () => void;
   setGameSettings: (data: RoomJoinedData, username: string) => void;
   setRoomMessageData: (data: RoomMessageData) => void;
+  setRoomCorrectAnswerData: (
+    data: RoomCorrectAnswerData,
+    username: string
+  ) => void;
+  clearRoomMessageData: () => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -84,7 +103,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   timeLimit: 30,
   status: "",
   settings: { maxPlayers: 2, numberOfPrompts: 2, timeLimit: 30 },
-
   hostId: 0,
   pending: true,
   drawer: true,
@@ -98,9 +116,19 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   },
   isReady: false,
   isOpenGameStart: false,
+  isOpenGameOver: false,
   currentRound: 0,
   nextDrawer: "",
-  roomMessageData: [{ username: "Risa", content: "test message" }],
+  roomMessageData: [],
+  roomCorrectAnswerData: {
+    content: "",
+    answer: "",
+    answerBy: "",
+    nextTheme: "",
+    nextDrawer: "",
+    currentRound: 0,
+    totalRounds: 0,
+  },
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -216,6 +244,14 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set({ isOpenGameStart: false });
   },
 
+  OpenGameOverModal: () => {
+    set({ isOpenGameOver: true });
+  },
+
+  CloseGameOverModal: () => {
+    set({ isOpenGameOver: false });
+  },
+
   setGameSettings: (data: RoomJoinedData, authUser: string) => {
     set((state) => ({
       roomJoinData: {
@@ -236,5 +272,37 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set((state) => ({
       roomMessageData: [...state.roomMessageData, data],
     }));
+  },
+
+  clearRoomMessageData: () => {
+    set(() => ({
+      roomMessageData: [],
+    }));
+  },
+
+  setRoomCorrectAnswerData: (data: RoomCorrectAnswerData, username: string) => {
+    set((state) => {
+      const updatedRoomCorrectAnswerData = {
+        ...state.roomCorrectAnswerData,
+        ...data,
+      };
+
+      const updatedRoomJoinData = {
+        ...state.roomJoinData,
+        theme: data.nextTheme,
+        nextDrawer: data.nextDrawer,
+      };
+
+      if (username === data.nextDrawer) {
+        set({ drawer: true });
+      } else {
+        set({ drawer: false });
+      }
+
+      return {
+        roomCorrectAnswerData: updatedRoomCorrectAnswerData,
+        roomJoinData: updatedRoomJoinData,
+      };
+    });
   },
 }));
