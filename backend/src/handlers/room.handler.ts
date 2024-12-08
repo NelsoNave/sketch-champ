@@ -182,6 +182,10 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     roomId: string;
   }) => {
     try {
+      if (!data.roomId) {
+        socket.emit("error", { message: "Room ID is required" });
+        return;
+      }
       // check if room is active
       const room = await Room.findById(data.roomId);
       // active or pending
@@ -349,6 +353,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
         content: `${socket.user?.username} is correct!`,
         answer: content,
         answerBy: socket.user?.username,
+        nextTheme: room.theme,
         nextDrawer: nextDrawer?.username,
         currentRound: room.currentRound,
         totalRounds: room.settings.numberOfPrompts,
