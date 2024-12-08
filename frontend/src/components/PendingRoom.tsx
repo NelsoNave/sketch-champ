@@ -5,6 +5,7 @@ import { useRoomStore } from "../store/useRoomStore";
 import { getSocket } from "../socket/socket.client";
 import { createRoomHandler } from "../socket/handlers/room.handler.client";
 import GameStartModal from "./GameStartModal";
+import GameOverModal from "./GameOverModal";
 
 const Room = () => {
   const handleGetReady = () => {
@@ -20,9 +21,11 @@ const Room = () => {
     roomJoinData,
     isReady,
     isOpenGameStart,
+    isOpenGameOver,
     roomMessageData,
     setIsReady,
     CloseGameStartModal,
+    CloseGameOverModal,
   } = useRoomStore();
 
   const socket = getSocket();
@@ -48,6 +51,10 @@ const Room = () => {
 
   const handleCloseModal = () => {
     CloseGameStartModal();
+  };
+
+  const handleGameOverModal = () => {
+    CloseGameOverModal();
   };
 
   const handleInputChange = (val: React.ChangeEvent<HTMLInputElement>) => {
@@ -254,6 +261,7 @@ const Room = () => {
         ) : null}
       </div>
       {isOpenGameStart && <GameStartModal onClose={handleCloseModal} />}
+      {isOpenGameOver && <GameOverModal onClose={handleGameOverModal} />}
     </div>
   );
 };

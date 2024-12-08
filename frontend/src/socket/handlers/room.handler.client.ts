@@ -34,6 +34,7 @@ interface RoomCorrectAnswerData {
   content: string;
   answer: string;
   answerBy: string;
+  nextTheme: string;
   nextDrawer: string;
   currentRound: number;
   totalRounds: number;
@@ -59,8 +60,10 @@ export const createRoomHandler = (socket: Socket) => {
     setRoomJoinData,
     updateRoomMember,
     OpenGameStartModal,
+    OpenGameOverModal,
     setGameSettings,
     setRoomMessageData,
+    setRoomCorrectAnswerData,
   } = useRoomStore.getState();
 
   const { authUser } = useAuthStore.getState();
@@ -101,7 +104,6 @@ export const createRoomHandler = (socket: Socket) => {
   };
 
   const handleCorrectAnswer = (data: RoomCorrectAnswerData) => {
-    // 正解した時に通知
     console.log("Answer correct:", data);
     setRoomCorrectAnswerData(data, authUser?.username as string);
     OpenGameOverModal();
@@ -110,9 +112,7 @@ export const createRoomHandler = (socket: Socket) => {
   };
 
   const handleMessage = (data: RoomMessageData) => {
-    // メッセージ(Answer)が送信された(正解ではない)時に通知
     console.log("Message:", data);
-    toast.success(`${data.username}: ${data.content}`);
     setRoomMessageData(data);
   };
 
