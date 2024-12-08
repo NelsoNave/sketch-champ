@@ -290,8 +290,8 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
 
     // if correct, processing score, and send message to room
-    const member = room.members.find(
-      (member) => member.userId === socket.user?._id
+    const member = room.members.find((member) =>
+      member.userId.equals(socket.user?._id)
     );
     if (member) {
       member.score++;
