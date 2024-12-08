@@ -110,8 +110,6 @@ export const createRoomHandler = (socket: Socket) => {
     OpenGameOverModal();
     // clear canvas
     socket.emit("room:clear", roomId);
-    // Todo update room store
-    socket.emit("room:ready", roomId);
   };
 
   const handleMessage = (data: RoomMessageData) => {

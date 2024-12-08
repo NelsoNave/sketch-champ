@@ -292,11 +292,11 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
         ...data,
       };
 
-      // const updatedRoomJoinData = {
-      //   ...state.roomJoinData,
-      //   theme: data.nextTheme,
-      //   nextDrawer: data.nextDrawer,
-      // };
+      const updatedRoomJoinData = {
+        ...state.roomJoinData,
+        theme: data.nextTheme,
+        nextDrawer: data.nextDrawer,
+      };
 
       if (username === data.nextDrawer) {
         set({ drawer: true });
@@ -306,7 +306,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
       return {
         roomCorrectAnswerData: updatedRoomCorrectAnswerData,
-        // roomJoinData: updatedRoomJoinData,
+        roomJoinData: updatedRoomJoinData,
       };
     });
   },
