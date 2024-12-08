@@ -57,6 +57,7 @@ export const createRoomHandler = (socket: Socket) => {
   socket.off("error");
 
   const {
+    roomId,
     setRoomJoinData,
     updateRoomMember,
     OpenGameStartModal,
@@ -108,6 +109,7 @@ export const createRoomHandler = (socket: Socket) => {
     setRoomCorrectAnswerData(data, authUser?.username as string);
     OpenGameOverModal();
     // Todo update room store
+    socket.emit("room:ready", roomId);
   };
 
   const handleMessage = (data: RoomMessageData) => {

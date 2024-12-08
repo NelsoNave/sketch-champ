@@ -55,6 +55,7 @@ const Room = () => {
 
   const handleGameOverModal = () => {
     CloseGameOverModal();
+    socket.emit("room:ready", roomId);
   };
 
   const handleInputChange = (val: React.ChangeEvent<HTMLInputElement>) => {
