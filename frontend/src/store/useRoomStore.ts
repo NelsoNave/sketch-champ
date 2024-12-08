@@ -35,6 +35,7 @@ interface RoomCorrectAnswerData {
   content: string;
   answer: string;
   answerBy: string;
+  nextTheme: string;
   nextDrawer: string;
   currentRound: number;
   totalRounds: number;
@@ -123,6 +124,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     content: "",
     answer: "",
     answerBy: "",
+    nextTheme: "",
     nextDrawer: "",
     currentRound: 0,
     totalRounds: 0,
@@ -287,7 +289,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
       const updatedRoomJoinData = {
         ...state.roomJoinData,
-        theme: `New Theme`,
+        theme: data.nextTheme,
         nextDrawer: data.nextDrawer,
       };
 

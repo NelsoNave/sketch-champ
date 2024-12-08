@@ -34,6 +34,7 @@ interface RoomCorrectAnswerData {
   content: string;
   answer: string;
   answerBy: string;
+  nextTheme: string;
   nextDrawer: string;
   currentRound: number;
   totalRounds: number;
