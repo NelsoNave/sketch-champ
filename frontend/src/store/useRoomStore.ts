@@ -80,6 +80,7 @@ interface RoomStore {
     username: string
   ) => void;
   clearRoomMessageData: () => void;
+  setRematch: (members: RoomMember[]) => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -146,6 +147,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
       } else {
+        console.error("Error in createRoom", error);
         toast.error("An unexpected error occurred");
       }
     }
@@ -163,6 +165,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
       } else {
+        console.error("Error in joinRoom", error);
         toast.error("An unexpected error occurred");
       }
     }
@@ -304,5 +307,34 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
         roomJoinData: updatedRoomJoinData,
       };
     });
+  },
+  setRematch: (members: RoomMember[]) => {
+    set((state) => ({
+      status: "pending",
+      pending: true,
+      drawer: true,
+      isReady: false,
+      isOpenGameStart: false,
+      isOpenGameOver: false,
+      currentRound: 0,
+      nextDrawer: "",
+      roomMessageData: [],
+      roomJoinData: {
+        roomId: state.roomId,
+        members: [...members],
+        settings: state.roomJoinData.settings,
+        theme: "",
+        nextDrawer: "",
+      },
+      roomCorrectAnswerData: {
+        content: "",
+        answer: "",
+        answerBy: "",
+        nextTheme: "",
+        nextDrawer: "",
+        currentRound: 0,
+        totalRounds: 0,
+      },
+    }));
   },
 }));

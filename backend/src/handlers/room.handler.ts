@@ -372,6 +372,55 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     });
   };
 
+  const handleRematch = async (roomId: string) => {
+    try {
+      const room = await Room.findById(roomId);
+      if (!room) {
+        return;
+      }
+      // if room not pending(other user already selected rematch), join the room
+      if (room.status === "pending") {
+        io.to(roomId).emit("room:rematch", {
+          roomId,
+          members: [
+            ...room.members,
+            {
+              userId: socket.user?._id,
+              username: socket.user?.username,
+              isReady: false,
+              joinedAt: new Date(),
+              score: 0,
+            },
+          ],
+        });
+        return;
+      }
+      // reset room
+      room.status = "pending";
+      room.currentRound = 0;
+      room.previousDrawers = [];
+      room.currentDrawer = undefined;
+      room.members = [
+        {
+          userId: socket.user?._id,
+          username: socket.user?.username,
+          isReady: false,
+          joinedAt: new Date(),
+          score: 0,
+        },
+      ];
+      room.drawings = [];
+      await room.save();
+      io.to(roomId).emit("room:rematch", {
+        roomId,
+        members: room.members,
+      });
+    } catch (error) {
+      console.error("Error in handleRematch", error);
+      socket.emit("error", { message: "Failed to rematch" });
+    }
+  };
+
   // Register event handlers
   socket.on("room:join", handleJoinRoom);
   socket.on("room:ready", handleReady);
@@ -379,6 +428,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
   socket.on("room:draw", handleDraw);
   socket.on("room:answer", handleAnswer);
   socket.on("room:clear", handleClearDraw);
+  socket.on("room:rematch", handleRematch);
 
   return {
     handleJoinRoom,
@@ -387,5 +437,6 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     handleDraw,
     handleAnswer,
     handleClearDraw,
+    handleRematch,
   };
 };

@@ -1,19 +1,24 @@
 import { useResultStore } from "../store/useResultStore";
 import { useNavigate } from "react-router-dom";
 import { useRoomStore } from "../store/useRoomStore";
+import { getSocket } from "../socket/socket.client";
 import Button from "./Button";
 
 const Result = () => {
+  const socket = getSocket();
   const { results } = useResultStore();
   const navigate = useNavigate();
-  const { leaveRoom } = useRoomStore();
+  const { leaveRoom, roomId } = useRoomStore();
 
   const handleLeaveRoom = () => {
     leaveRoom();
     navigate("/");
   };
 
-  const handleRematch = () => {};
+  const handleRematch = async () => {
+    await socket.emit("room:rematch", roomId);
+    navigate(`/${roomId}/room`);
+  };
 
   return (
     <div className="flex flex-col gap-4">
