@@ -71,6 +71,7 @@ export const createRoomHandler = (
     setRoomMessageData,
     setRoomCorrectAnswerData,
     setRematch,
+    setMobileMessage,
   } = useRoomStore.getState();
 
   const { setResult } = useResultStore.getState();
@@ -122,6 +123,7 @@ export const createRoomHandler = (
   const handleMessage = (data: RoomMessageData) => {
     console.log("Message:", data);
     setRoomMessageData(data);
+    setMobileMessage(data);
   };
 
   const handleFinished = (data: RoomFinishedData) => {

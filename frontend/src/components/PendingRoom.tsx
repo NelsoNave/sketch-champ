@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { createRoomHandler } from "../socket/handlers/room.handler.client";
 import GameStartModal from "./GameStartModal";
 import GameOverModal from "./GameOverModal";
+import toast from "react-hot-toast";
 
 const Room = () => {
   const navigate = useNavigate();
@@ -27,6 +28,8 @@ const Room = () => {
     isOpenGameStart,
     isOpenGameOver,
     roomMessageData,
+    mobile_username,
+    mobile_message,
     setIsReady,
     CloseGameStartModal,
     CloseGameOverModal,
@@ -65,6 +68,12 @@ const Room = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    if (mobile_username) {
+      toast.success(`${mobile_username} says ${mobile_message}`);
+    }
+  }, [mobile_username, mobile_message]);
 
   const [content, setContent] = useState<string>("");
 

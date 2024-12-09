@@ -60,6 +60,8 @@ interface RoomStore {
   roomMessageData: RoomMessageData[];
   roomCorrectAnswerData: RoomCorrectAnswerData;
   isOpenGameOver: boolean;
+  mobile_username: string;
+  mobile_message: string;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -81,6 +83,7 @@ interface RoomStore {
   ) => void;
   clearRoomMessageData: () => void;
   setRematch: (members: RoomMember[]) => void;
+  setMobileMessage: (messageData: RoomMessageData) => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -93,7 +96,7 @@ const setRoomSettings = (prefix: any) => {
       numberOfPrompts: prefix.settings.numberOfPrompts,
       timeLimit: prefix.settings.timeLimit,
     },
-    roomId: prefix._id,
+    roomId: prefix.roomId,
   };
 };
 
@@ -130,6 +133,8 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     currentRound: 0,
     totalRounds: 0,
   },
+  mobile_username: "",
+  mobile_message: "",
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -177,7 +182,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set({ roomId: "" });
   },
 
-  // join
   accessRoom: () => {
     const socket = getSocket();
     socket.emit("join-room");
@@ -336,5 +340,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
         totalRounds: 0,
       },
     }));
+  },
+
+  setMobileMessage: (messageData: RoomMessageData) => {
+    set({
+      mobile_username: messageData.username,
+      mobile_message: messageData.content,
+    });
   },
 }));

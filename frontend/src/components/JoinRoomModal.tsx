@@ -22,7 +22,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
     if (roomId) {
       navigate(`/${roomId}/room`);
     }
-  }, [roomId]);
+  }, [roomId, navigate]);
 
   // validation
   const {
