@@ -3,6 +3,7 @@ import { useRoomStore } from "../store/useRoomStore";
 import Button from "./Button";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 
 type FormData = {
   codeword: string;
@@ -26,7 +27,7 @@ const CreateRoomModal = ({
     if (roomId) {
       navigate(`/${roomId}/room`);
     }
-  }, [roomId]);
+  }, [roomId, navigate]);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -43,7 +44,15 @@ const CreateRoomModal = ({
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center font-poppins">
-      <div className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom">
+      <motion.div
+        className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
+      >
         <div className="flex items-center justify-between">
           <h2 className="text-2xl mb-4 font-bold font-russo_one">
             Create a New Room
@@ -129,7 +138,7 @@ const CreateRoomModal = ({
             Create
           </Button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };

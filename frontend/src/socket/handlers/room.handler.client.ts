@@ -71,6 +71,8 @@ export const createRoomHandler = (
     setRoomMessageData,
     setRoomCorrectAnswerData,
     setRematch,
+    setMobileMessage,
+    setAllGameOver,
   } = useRoomStore.getState();
 
   const { setResult } = useResultStore.getState();
@@ -100,13 +102,13 @@ export const createRoomHandler = (
     // ゲームが開始(全員Readyした時)に通知
     console.log("Game start:", data);
     setGameSettings(data, authUser?.username as string);
+    socket.emit("room:clear", roomId);
     OpenGameStartModal();
   };
 
   const handleTimeUp = (data: RoomJoinedData) => {
     // お題のTimeupで通知
     console.log("Time up:", data);
-    toast.success("Time is up");
     // Todo show message in room
     // Todo update room store
   };
@@ -122,13 +124,14 @@ export const createRoomHandler = (
   const handleMessage = (data: RoomMessageData) => {
     console.log("Message:", data);
     setRoomMessageData(data);
+    setMobileMessage(data);
   };
 
   const handleFinished = (data: RoomFinishedData) => {
     console.log("Finished:", data.results);
-    toast.success("Game finished");
     setResult(data.results);
-    navigate(`/${roomId}/result`);
+    setAllGameOver();
+    OpenGameOverModal();
   };
 
   const handleMemberLeft = (data: RoomJoinedData) => {

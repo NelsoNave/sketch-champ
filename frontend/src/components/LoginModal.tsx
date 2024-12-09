@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "../store/useAuthStore";
 import Button from "./Button";
+import { motion } from "framer-motion";
 
 type FormData = {
   username: string;
@@ -31,8 +32,22 @@ const LoginModal = ({ closeModal }: { closeModal: () => void }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center ">
-      <div className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 md:w-1/3 lg:w-1/4 border-2 border-black shadow-custom">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+      <motion.div
+        className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom z-50"
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+        }}
+        transition={{
+          duration: 1,
+          ease: "easeOut",
+          type: "spring",
+          stiffness: 100,
+        }}
+      >
         <div className="flex items-center justify-between">
           {isSignup ? (
             <h2 className="text-2xl mb-4 bold font-russo_one">Sign up</h2>
@@ -98,7 +113,7 @@ const LoginModal = ({ closeModal }: { closeModal: () => void }) => {
             </button>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
