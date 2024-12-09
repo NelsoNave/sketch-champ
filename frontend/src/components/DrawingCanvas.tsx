@@ -103,6 +103,48 @@ const DrawingCanvas = () => {
     );
   };
 
+  const handleTouchStart = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (!drawer) return;
+    e.preventDefault(); // prevent default scroll
+
+    const touch = e.touches[0];
+    const point = getCoordinatesFromTouch(touch);
+    setIsDrawing(true);
+    setCurrentPath([point]);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (!isDrawing || !drawer) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const point = getCoordinatesFromTouch(touch);
+    setCurrentPath((prev) => [...prev, point]);
+  };
+
+  const handleTouchEnd = () => {
+    if (!drawer) return;
+    stopDrawing();
+  };
+
+  const getCoordinatesFromTouch = (touch: React.Touch): Point => {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, y: 0 };
+
+    const point = svg.createSVGPoint();
+    point.x = touch.clientX;
+    point.y = touch.clientY;
+
+    const transformedPoint = point.matrixTransform(
+      svg.getScreenCTM()?.inverse()
+    );
+
+    return {
+      x: transformedPoint.x,
+      y: transformedPoint.y,
+    };
+  };
+
   return (
     <div className="h-[480px] rounded-xl border-2 border-black bg-white">
       <svg
@@ -114,6 +156,10 @@ const DrawingCanvas = () => {
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ touchAction: "none" }} // prevent default scroll
       >
         {paths.map((path, index) => (
           <path
