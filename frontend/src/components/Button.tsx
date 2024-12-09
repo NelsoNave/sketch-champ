@@ -14,7 +14,7 @@ export default function Button({
 }: ButtonProps) {
   // base
   const baseStyles =
-    "rounded-xl transition-all duration-200 focus:outline-none focus:ring-2  w-full h-[50px] font-russo_one border-2 border-black shadow-custom";
+    "rounded-xl transition-all duration-200 focus:outline-none focus:ring-2  w-full h-[50px] font-russo_one border-2 border-black shadow-custom transition-all duration-100 [box-shadow:5px_5px_rgb(0_0_0)] hover:translate-x-[3px] hover:translate-y-[3px] hover:[box-shadow:0px_0px_rgb(0_0_0)]";
 
   const variantStyles = {
     green:
