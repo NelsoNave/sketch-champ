@@ -26,8 +26,15 @@ const Header = () => {
 
   return (
     <div className="flex justify-between items-center py-5 px-2 md:px-8">
-      <div className="font-russo_one cursor-pointer" onClick={onLogoClick}>
-        Kawaii Logo
+      <div
+        className="font-russo_one cursor-pointer w-40 h-30"
+        onClick={onLogoClick}
+      >
+        <img
+          src="/logo.png"
+          alt="logo"
+          className="w-full h-auto object-cover "
+        />
       </div>
       <nav>
         {authUser ? (
