@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const GameOverModal = ({ onClose }: { onClose: () => void }) => {
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(4);
   const navigate = useNavigate();
   const {
     roomCorrectAnswerData,

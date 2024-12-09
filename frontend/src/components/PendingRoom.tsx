@@ -114,7 +114,7 @@ const Room = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row md:gap-8 mt-5">
+    <div className="flex flex-col lg:flex-row md:gap-8 mt-12">
       <div className="flex flex-col items-center w-full lg:w-2/3 md:gap-2">
         {pending ? (
           <p className="p-2 font-poppins text-center text-sm font-medium bg-custom-albescent-white w-full rounded-lg">
@@ -147,12 +147,15 @@ const Room = () => {
             ) : (
               <div className="flex w-full gap-3">
                 <div className="relative w-1/2">
-                  <p className="absolute top-1/5 left-3 transform -translate-y-1/2 text-custom-cape-cod text-sm  bg-custom-serenade mx-1 px-2 font-bold">
+                  <p className="absolute top-1/5 left-3 transform -translate-y-1/2 text-custom-cape-cod text-sm bg-custom-serenade mx-1 px-2 font-bold">
                     Drawer
                   </p>
-                  <p className="flex justify-center items-center rounded-lg border-2 border-black h-11 font-russo_one shadow-custom_light">
-                    {roomJoinData.nextDrawer}
-                  </p>
+                  <div className="flex w-full justify-center items-center rounded-lg border-2 border-black h-11 font-russo_one shadow-custom_light gap-2">
+                    <div className="w-[24px]">
+                      <img src="/bee.png" alt="stopwatch" />
+                    </div>
+                    <p className="">{roomJoinData.nextDrawer}</p>
+                  </div>
                 </div>
                 <div className="relative w-1/2">
                   <p className="absolute top-1/5 left-3 transform -translate-y-1/2 text-custom-cape-cod text-sm bg-custom-serenade mx-1 px-2 font-bold">
@@ -226,7 +229,7 @@ const Room = () => {
         ) : (
           !isMobile && (
             <>
-              <div className="relative md:h-[420px] border-2 border-black rounded-xl bg-custom-bianca mt-12">
+              <div className="relative md:h-[220px] lg:h-[420px] border-2 border-black rounded-xl bg-custom-bianca mt-12">
                 <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-custom-yellow text-center font-russo_one">
                   chat
                 </div>
