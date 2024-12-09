@@ -25,12 +25,18 @@ const Home = () => {
         <p className="font-poppins">Who’s the Best Artist? Let’s Find Out!</p>
       </div>
       <div className="flex flex-col gap-8 md:flex-row justify-center">
-        <Button onClick={setCreateRoom} className="w-[250px]">
+        <button
+          onClick={setCreateRoom}
+          className="rounded-xl focus:outline-none focus:ring-2  w-[220px] h-[50px] font-russo_one border-2 border-black shadow-custom transition-all duration-100 [box-shadow:5px_5px_rgb(0_0_0)] hover:translate-x-[3px] hover:translate-y-[3px] hover:[box-shadow:0px_0px_rgb(0_0_0) bg-white hover:bg-custom-yellow focus:ring-gray-500]"
+        >
           Create Room
-        </Button>
-        <Button onClick={setJoinRoom} className="w-[250px]">
+        </button>
+        <button
+          onClick={setJoinRoom}
+          className="rounded-xl focus:outline-none focus:ring-2  w-[220px] h-[50px] font-russo_one border-2 border-black shadow-custom transition-all duration-100 [box-shadow:5px_5px_rgb(0_0_0)] hover:translate-x-[3px] hover:translate-y-[3px] hover:[box-shadow:0px_0px_rgb(0_0_0) bg-white hover:bg-custom-yellow focus:ring-gray-500]"
+        >
           Join Room
-        </Button>
+        </button>
       </div>
 
       <div className="hidden md:block">
