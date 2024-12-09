@@ -22,8 +22,8 @@ const GameStartModal = ({ onClose }: { onClose: () => void }) => {
   }, [count]);
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center ">
-      <div className="bg-white py-12 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white py-12 rounded-2xl w-1/2 lg:w-1/3 border-2 border-black shadow-custom">
         <h2 className="text-2xl font-bold text-center mb-4 font-mochiy_pop_one">
           Game starts in
         </h2>

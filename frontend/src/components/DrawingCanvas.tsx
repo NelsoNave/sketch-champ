@@ -109,7 +109,7 @@ const DrawingCanvas = () => {
   };
 
   return (
-    <div className="h-[480px] rounded-xl border-2 border-black bg-white">
+    <div className="h-[480px] rounded-xl border-2 border-black bg-white mt-4">
       <svg
         ref={svgRef}
         className="w-full h-full"

@@ -31,12 +31,12 @@ const Header = () => {
       </div>
       <nav>
         {authUser ? (
-          <button onClick={onLogoutClick} className="text-md font-bold">
-            Log out
+          <button onClick={onLogoutClick} className="text-md font-semibold">
+            LOG OUT
           </button>
         ) : (
-          <button onClick={openModal} className="text-md font-bold">
-            Log in
+          <button onClick={openModal} className="text-md font-semibold">
+            LOG IN
           </button>
         )}
       </nav>
