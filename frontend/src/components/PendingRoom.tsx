@@ -34,6 +34,7 @@ const Room = () => {
     setIsReady,
     CloseGameStartModal,
     CloseGameOverModal,
+    clearMobileMessage,
   } = useRoomStore();
 
   const socket = getSocket();
@@ -82,8 +83,9 @@ const Room = () => {
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
         },
       });
+      clearMobileMessage();
     }
-  }, [mobile_username, mobile_message, isMobile]);
+  }, [mobile_username, mobile_message, isMobile, clearMobileMessage]);
 
   const [content, setContent] = useState<string>("");
 
@@ -168,33 +170,32 @@ const Room = () => {
           </>
         )}
         <div className="w-full">
-          <div className="w-full">{!pending ? <DrawingCanvas /> : null}</div>
+          <div className="w-full">
+            {!(pending && isMobile) ? <DrawingCanvas /> : null}
+          </div>
         </div>
       </div>
-      <div className="flex flex-col h-full w-full lg:w-1/3 gap-10 md:gap-5 ">
+      <div className="flex flex-col h-full w-full lg:w-1/3 gap-10 md:gap-6">
         {pending ? (
           <>
-            <div className="relative border-2 border-black rounded-xl bg-custom-yellow mt-10">
+            <div className="relative border-2 border-black rounded-xl bg-custom-yellow mt-16 h-[180px]">
               <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-white text-center font-russo_one">
                 Room Settings
               </div>
-              <div className="flex flex-col items-center justify-center h-full gap-2 text-lg rounded-xl font-nunito font-semibold p-5">
+              <div className="flex flex-col justify-center h-full gap-2 text-lg rounded-xl font-nunito font-semibold px-14">
                 <p>Codeword : {codeword}</p>
                 <p>Time Limitation : {settings.timeLimit}sec</p>
                 <p>Number of Prompts : {settings.numberOfPrompts}</p>
               </div>
             </div>
-            <div className="relative h-full border-2 border-black rounded-xl bg-custom-teal">
+            <div className="relative border-2 border-black rounded-xl bg-custom-teal h-[180px]">
               <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-white text-center font-russo_one">
                 Player
               </div>
-              <div className="flex flex-col items-center h-full gap-2 text-lg rounded-xl font-nunito font-semibold py-2 px-10">
-                <ul className="flex flex-col gap-3 my-7 w-1/2">
+              <div className="flex flex-col h-full gap-2 text-lg rounded-xl font-nunito font-semibold py-2 px-12">
+                <ul className="flex flex-col gap-3 my-7">
                   {roomJoinData.members.map((data, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center justify-center md:justify-around gap-6"
-                    >
+                    <li key={index} className="flex items-center gap-6">
                       <div className="flex items-center gap-2">
                         <div className="border border-black rounded-full bg-white w-9">
                           <img
@@ -203,7 +204,7 @@ const Room = () => {
                             className="w-full h-full"
                           />
                         </div>
-                        <p className="w-[100px] overflow-auto font-mochiy_pop_one">
+                        <p className="overflow-auto font-mochiy_pop_one">
                           {data.username}
                         </p>
                       </div>
@@ -225,7 +226,7 @@ const Room = () => {
         ) : (
           !isMobile && (
             <>
-              <div className="relative md:h-[530px] border-2 border-black rounded-xl bg-custom-bianca mt-12">
+              <div className="relative md:h-[420px] border-2 border-black rounded-xl bg-custom-bianca mt-12">
                 <div className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-black rounded-xl w-2/3 bg-custom-yellow text-center font-russo_one">
                   chat
                 </div>
@@ -253,7 +254,7 @@ const Room = () => {
                       </li>
                     ))}
                   </ul>
-                  {!drawer && (
+                  {/* {!drawer && (
                     <form
                       action=""
                       className="py-8 px-2 relative"
@@ -274,16 +275,16 @@ const Room = () => {
                         />
                       </button>
                     </form>
-                  )}
+                  )} */}
                 </div>
               </div>
             </>
           )
         )}
-        {isMobile && !drawer && (
+        {!drawer && (
           <form
             action=""
-            className="py-8 px-2 relative"
+            className="relative mt-3 md:mt-0"
             onSubmit={handleSendMessage}
           >
             <input
@@ -295,7 +296,7 @@ const Room = () => {
             />
             <button
               type="submit"
-              className="absolute w-9 right-4 top-1/2 transform -translate-y-1/2 p-2 bg-black text-white rounded-md"
+              className="absolute w-9 right-1 top-1/2 transform -translate-y-1/2 p-2 bg-black text-white rounded-md"
             >
               <img
                 src="/send.png"
@@ -312,7 +313,7 @@ const Room = () => {
               <Button
                 variant="pink"
                 onClick={handleGetReady}
-                className="bg-custom-right-blue w-[300px]"
+                className="bg-custom-right-blue w-[300px] mb-7"
               >
                 Cancel
               </Button>
@@ -320,13 +321,13 @@ const Room = () => {
               <Button
                 variant="pink"
                 onClick={handleGetReady}
-                className="w-[300px]"
+                className="w-[300px] mb-7"
               >
                 I'm ready to join!
               </Button>
             )
           ) : drawer ? (
-            <Button variant="pink" className="mt-14 md:mt-2">
+            <Button variant="pink" className="mt-14 md:mt-2 mb-7">
               Start Drawing
             </Button>
           ) : null}

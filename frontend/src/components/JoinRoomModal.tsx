@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useRoomStore } from "../store/useRoomStore";
 import Button from "./Button";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"; // framer-motion をインポート
+import { motion } from "framer-motion"; 
 
 type FormData = {
   codeword: string;
@@ -34,15 +34,14 @@ const JoinRoomModal: React.FC<{ closeJoinRoomModal: () => void }> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center font-poppins">
-      {/* アニメーションをmotion.divに適用 */}
       <motion.div
         className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom"
-        initial={{ opacity: 0, y: -50 }} // 初期状態（上からスライドイン）
+        initial={{ opacity: 0, y: -50 }}
         animate={{
           opacity: 1,
           y: 0,
-        }} // 最終状態（スライドインして表示）
-        transition={{ duration: 0.9, ease: "easeInOut" }} // アニメーションの設定
+        }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
       >
         <div className="flex items-center justify-between">
           <h2 className="text-2xl mb-4 font-bold font-russo_one">Join Room</h2>

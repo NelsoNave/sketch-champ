@@ -64,15 +64,15 @@ const GameOverModal = ({ onClose }: { onClose: () => void }) => {
         onAnimationComplete={handleAnimationComplete}
       >
         {isAllGameOver ? (
-          <div className="flex flex-col gap-4 p-6">
-            <h2 className="text-3xl font-bold text-center font-sans italic">
+          <div className="flex flex-col items-center gap-4 p-6">
+            <h2 className="text-3xl font-bold text-center justify-center text-green-500 font-sans italic">
               Game Over!
             </h2>
             <p>It’s time to reveal the winner!</p>
           </div>
         ) : (
           <>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 p-6">
               <h2 className="text-3xl font-bold text-center font-sans italic">
                 Congrats!
               </h2>
@@ -88,7 +88,7 @@ const GameOverModal = ({ onClose }: { onClose: () => void }) => {
                 </p>
               </div>
             </div>
-            <div className="flex justify-center w-4/5 bg-custom-albescent-white rounded gap-2 p-2">
+            <div className="flex justify-center w-full bg-custom-albescent-white rounded gap-2 p-2">
               <p className="text-gray-600 font-semibold">Next drawer is</p>
               <div className="flex gap-1">
                 <div className="border border-black rounded-full bg-white w-6">

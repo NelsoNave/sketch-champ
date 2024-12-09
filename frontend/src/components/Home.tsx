@@ -19,9 +19,9 @@ const Home = () => {
   const closeJoinRoomModal = () => setIsJoinRoom(false);
 
   return (
-    <div className="flex flex-col gap-8 items-center justify-center h-full mb-20">
-      <div className="flex flex-col gap-1 justify-center items-center">
-        <h1 className="text-6xl font-russo_one">SketchChamp</h1>
+    <div className="flex flex-col gap-8 items-center justify-center h-full mb-80">
+      <div className="flex flex-col justify-center items-center w-full">
+        <h1 className="text-5xl md:text-6xl font-russo_one">SketchChamp</h1>
         <p className="font-poppins">Who’s the Best Artist? Let’s Find Out!</p>
       </div>
       <div className="flex flex-col gap-8 md:flex-row justify-center">

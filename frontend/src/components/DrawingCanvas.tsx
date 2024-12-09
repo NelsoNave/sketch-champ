@@ -144,7 +144,7 @@ const DrawingCanvas = () => {
         )}
       </svg>
       {drawer ? (
-        <div className="tools flex rounded-md p-3 gap-3">
+        <div className="tools flex justify-end rounded-md p-3 gap-3">
           {colors.map((color) => (
             <button
               key={color}

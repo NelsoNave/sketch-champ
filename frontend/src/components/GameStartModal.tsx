@@ -2,11 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRoomStore } from "../store/useRoomStore";
 
-const GameStartModal = ({
-  onClose,
-}: {
-  onClose: () => void;
-}) => {
+const GameStartModal = ({ onClose }: { onClose: () => void }) => {
   const [count, setCount] = useState(3);
   const [stage, setStage] = useState<"enter" | "countdown" | "exit">("enter");
   const { updatePending } = useRoomStore();
@@ -37,8 +33,7 @@ const GameStartModal = ({
 
   useEffect(() => {
     if (stage === "exit") {
-      const exitTimer = setTimeout(() => {
-      }, 900);
+      const exitTimer = setTimeout(() => {}, 900);
 
       const closeTimer = setTimeout(() => {
         onClose();
@@ -50,7 +45,7 @@ const GameStartModal = ({
         clearTimeout(closeTimer);
       };
     }
-  }, [stage, onClose]);
+  }, [stage, onClose, updatePending]);
 
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50">
@@ -64,9 +59,9 @@ const GameStartModal = ({
           type: "tween",
         }}
       >
-        <div className="bg-white py-12 rounded-2xl w-[300px] lg:w-1/3 border-2 border-black shadow-custom">
-          <h2 className="text-2xl font-bold text-center mb-4 font-mochiy_pop_one">
-            Game starts in
+        <div className="bg-white py-12 rounded-2xl w-[400px] border-2 border-black shadow-custom">
+          <h2 className="text-2xl font-semibold text-center mb-4 font-mochiy_pop_one">
+            Game starts in...
           </h2>
           <div className="text-center text-4xl font-semibold">
             <p

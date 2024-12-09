@@ -85,6 +85,7 @@ interface RoomStore {
   clearRoomMessageData: () => void;
   setRematch: (members: RoomMember[]) => void;
   setMobileMessage: (messageData: RoomMessageData) => void;
+  clearMobileMessage: () => void;
   setAllGameOver: () => void;
 }
 
@@ -351,6 +352,14 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       mobile_message: messageData.content,
     });
   },
+
+  clearMobileMessage: () => {
+    set({
+      mobile_username: "",
+      mobile_message: "",
+    });
+  },
+
   setAllGameOver: () => {
     set((state) => ({
       isAllGameOver: !state.isAllGameOver,
