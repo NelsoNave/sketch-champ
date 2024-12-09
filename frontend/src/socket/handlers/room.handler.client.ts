@@ -102,6 +102,7 @@ export const createRoomHandler = (
     // ゲームが開始(全員Readyした時)に通知
     console.log("Game start:", data);
     setGameSettings(data, authUser?.username as string);
+    socket.emit("room:clear", roomId);
     OpenGameStartModal();
   };
 
