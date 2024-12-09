@@ -277,7 +277,7 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
 
     // check if the answer is correct
-    const isCorrect = room.theme === content;
+    const isCorrect = room.theme?.toLowerCase() === content.toLowerCase();
 
     // if inCorrect, send message to room and return
     if (!isCorrect) {
