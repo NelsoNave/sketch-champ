@@ -290,8 +290,8 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
 
     // if correct, processing score, and send message to room
-    const member = room.members.find(
-      (member) => member.userId === socket.user?._id
+    const member = room.members.find((member) =>
+      member.userId.equals(socket.user?._id)
     );
     if (member) {
       member.score++;
@@ -320,14 +320,12 @@ export const createRoomHandler = (io: Server, socket: Socket) => {
     }
     // set new theme
     room.theme = getRandomTheme();
-
-    // increment round
-    room.currentRound++;
-
     // check if round is over
     if (room.currentRound === room.settings.numberOfPrompts) {
       room.status = "finished";
     }
+    // increment round
+    room.currentRound++;
     // update room
     await room.save();
 
