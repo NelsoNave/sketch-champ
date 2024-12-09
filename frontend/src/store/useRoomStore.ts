@@ -62,6 +62,7 @@ interface RoomStore {
   isOpenGameOver: boolean;
   mobile_username: string;
   mobile_message: string;
+  isAllGameOver: boolean;
 
   createRoom: (roomSetting: Room) => Promise<void>;
   joinRoom: (codeWord: string) => Promise<void>;
@@ -84,6 +85,7 @@ interface RoomStore {
   clearRoomMessageData: () => void;
   setRematch: (members: RoomMember[]) => void;
   setMobileMessage: (messageData: RoomMessageData) => void;
+  setAllGameOver: () => void;
 }
 
 const setRoomSettings = (prefix: any) => {
@@ -135,6 +137,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   },
   mobile_username: "",
   mobile_message: "",
+  isAllGameOver: false,
 
   createRoom: async (roomSetting: Room) => {
     try {
@@ -347,5 +350,10 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       mobile_username: messageData.username,
       mobile_message: messageData.content,
     });
+  },
+  setAllGameOver: () => {
+    set((state) => ({
+      isAllGameOver: !state.isAllGameOver,
+    }));
   },
 }));

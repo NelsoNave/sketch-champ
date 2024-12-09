@@ -72,6 +72,7 @@ export const createRoomHandler = (
     setRoomCorrectAnswerData,
     setRematch,
     setMobileMessage,
+    setAllGameOver,
   } = useRoomStore.getState();
 
   const { setResult } = useResultStore.getState();
@@ -130,7 +131,8 @@ export const createRoomHandler = (
     console.log("Finished:", data.results);
     toast.success("Game finished");
     setResult(data.results);
-    navigate(`/${roomId}/result`);
+    setAllGameOver();
+    OpenGameOverModal();
   };
 
   const handleMemberLeft = (data: RoomJoinedData) => {
