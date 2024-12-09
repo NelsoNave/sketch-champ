@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRoomStore } from "../store/useRoomStore";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const GameOverModal = ({ onClose }: { onClose: () => void }) => {
   const [count, setCount] = useState(3);
@@ -13,9 +14,10 @@ const GameOverModal = ({ onClose }: { onClose: () => void }) => {
     clearRoomMessageData,
   } = useRoomStore();
 
+  // Interval to handle countdown
   useEffect(() => {
-    console.log(count);
     if (count === 0) {
+      // If game is over, navigate and close modal
       if (isAllGameOver) {
         setAllGameOver();
         navigate(`/${roomId}/result`);
@@ -29,11 +31,38 @@ const GameOverModal = ({ onClose }: { onClose: () => void }) => {
 
       return () => clearInterval(intervalId);
     }
-  }, [count, isAllGameOver, setAllGameOver, clearRoomMessageData, onClose]);
+  }, [
+    count,
+    isAllGameOver,
+    roomId,
+    setAllGameOver,
+    clearRoomMessageData,
+    onClose,
+    navigate,
+  ]);
+
+  const handleAnimationComplete = () => {
+    if (count === 0 && isAllGameOver) {
+      navigate(`/${roomId}/result`);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-      <div className="flex flex-col items-center gap-6 bg-white py-6 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom">
+      <motion.div
+        className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        exit={{
+          opacity: 0,
+          y: 50,
+        }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
+        onAnimationComplete={handleAnimationComplete}
+      >
         {isAllGameOver ? (
           <div className="flex flex-col gap-4 p-6">
             <h2 className="text-3xl font-bold text-center font-sans italic">
@@ -72,7 +101,7 @@ const GameOverModal = ({ onClose }: { onClose: () => void }) => {
             </div>
           </>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
