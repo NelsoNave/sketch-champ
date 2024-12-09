@@ -96,7 +96,7 @@ const setRoomSettings = (prefix: any) => {
       numberOfPrompts: prefix.settings.numberOfPrompts,
       timeLimit: prefix.settings.timeLimit,
     },
-    roomId: prefix.roomId,
+    roomId: prefix._id,
   };
 };
 

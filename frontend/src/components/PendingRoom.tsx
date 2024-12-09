@@ -71,7 +71,16 @@ const Room = () => {
 
   useEffect(() => {
     if (mobile_username) {
-      toast.success(`${mobile_username} says ${mobile_message}`);
+      toast(`${mobile_username} : "${mobile_message}"`, {
+        style: {
+          background: "white",
+          color: "#333",
+          border: "2px solid green",
+          borderRadius: "10px",
+          fontWeight: "600",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        },
+      });
     }
   }, [mobile_username, mobile_message]);
 
