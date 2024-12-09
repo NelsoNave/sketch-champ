@@ -32,9 +32,9 @@ const LoginModal = ({ closeModal }: { closeModal: () => void }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
       <motion.div
-        className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom"
+        className="bg-white px-8 py-9 rounded-2xl sm:w-1/2 lg:w-1/3 border-2 border-black shadow-custom z-50"
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{
           opacity: 1,
