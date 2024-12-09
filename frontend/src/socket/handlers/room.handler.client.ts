@@ -108,7 +108,6 @@ export const createRoomHandler = (
   const handleTimeUp = (data: RoomJoinedData) => {
     // お題のTimeupで通知
     console.log("Time up:", data);
-    toast.success("Time is up");
     // Todo show message in room
     // Todo update room store
   };
@@ -129,7 +128,6 @@ export const createRoomHandler = (
 
   const handleFinished = (data: RoomFinishedData) => {
     console.log("Finished:", data.results);
-    toast.success("Game finished");
     setResult(data.results);
     setAllGameOver();
     OpenGameOverModal();
