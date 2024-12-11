@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Button from "./Button";
 import CreateRoomModal from "./CreateRoomModal";
 import JoinRoomModal from "./JoinRoomModal";
 

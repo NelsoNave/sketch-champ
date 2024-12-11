@@ -4,7 +4,6 @@ import { Result } from "../../types/result.type";
 import { useRoomStore } from "../../store/useRoomStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useResultStore } from "../../store/useResultStore";
-import { NavigateFunction } from "react-router-dom";
 interface RoomMember {
   userId: string;
   username: string;
@@ -45,10 +44,7 @@ interface RoomFinishedData {
   results: Result[];
 }
 
-export const createRoomHandler = (
-  socket: Socket,
-  navigate: NavigateFunction
-) => {
+export const createRoomHandler = (socket: Socket) => {
   // Remove all event handlers
   socket.off("room:member_joined");
   socket.off("room:member_left");

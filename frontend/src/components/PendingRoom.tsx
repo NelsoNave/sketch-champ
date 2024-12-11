@@ -3,14 +3,12 @@ import DrawingCanvas from "./DrawingCanvas";
 import Button from "./Button";
 import { useRoomStore } from "../store/useRoomStore";
 import { getSocket } from "../socket/socket.client";
-import { useNavigate } from "react-router-dom";
 import { createRoomHandler } from "../socket/handlers/room.handler.client";
 import GameStartModal from "./GameStartModal";
 import GameOverModal from "./GameOverModal";
 import toast from "react-hot-toast";
 
 const Room = () => {
-  const navigate = useNavigate();
   const handleGetReady = () => {
     socket.emit("room:ready", roomId);
     setIsReady();
@@ -39,7 +37,7 @@ const Room = () => {
 
   const socket = getSocket();
   const hasJoinId = useRef(false);
-  createRoomHandler(socket, navigate);
+  createRoomHandler(socket);
 
   // Join room if component is mounted
   useEffect(() => {
