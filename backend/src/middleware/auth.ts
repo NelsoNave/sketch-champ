@@ -37,7 +37,9 @@ export const auth: RequestHandler = async (
 
 export const verifyUser = async (token: string) => {
   try {
+    console.log("verifyUser - token:", token);
     const { userId } = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    console.log("decoded token", userId);
     if (!userId) {
       throw new Error("Invalid token");
     }
@@ -47,6 +49,7 @@ export const verifyUser = async (token: string) => {
     }
     return user;
   } catch (error) {
+    console.error("Token verification failed:", error);
     throw new Error("Authentication failed");
   }
 };
