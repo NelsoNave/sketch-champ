@@ -14,6 +14,10 @@ export const auth: RequestHandler = async (
   try {
     // Get token from header
     const token = req.cookies.token;
+    console.log("token", token);
+    console.log("Auth middleware - cookies:", req.cookies); // デバッグ用
+    console.log("Auth middleware - headers:", req.headers); // デバッグ用
+
     if (!token) {
       res.status(401).json({ message: "Unauthorized please login" });
       return;
@@ -26,6 +30,7 @@ export const auth: RequestHandler = async (
     req.user = user;
     next();
   } catch (error) {
+    console.error("Authentication failed", error);
     res.status(401).json({ message: "Request is not authorized" });
   }
 };
